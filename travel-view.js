@@ -1,6 +1,5 @@
 export class TravelView extends HTMLElement {
   // static observedAttributes = ["color", "size"];
-  repo_channel = new BroadcastChannel("travel-repo");
   #object = null;
 
   constructor() {
@@ -10,29 +9,6 @@ export class TravelView extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.appendChild(templateContent.cloneNode(true));
-
-    // this.repo_channel.onmessage = (event) => {
-    //   console.log(event.data);
-    //   let message = event.data;
-
-    //   if (message.type === "handshake") {
-    //     this.repo_channel.postMessage({ type: "request-travels" });
-    //   } else if (message.type === "response-travels") {
-    //     message.travels.forEach((travel) => {
-    //       let viewTemplate = document.getElementById("travel-view-template");
-
-    //       Object.keys(travel).forEach((key) => {
-    //         let element = viewTemplate.content.querySelector("#" + key);
-
-    //         if (element) {
-    //           element.innerHTML = travel[key];
-    //         }
-    //       });
-    //       shadowRoot.appendChild(viewTemplate.content.cloneNode(true));
-    //     })
-    //     // shadhowRoot.querySelector("p").innerHTML = message.travels[0].title;
-    //   }
-    // };
   }
 
   set object(object) {
