@@ -3,53 +3,39 @@
 
 <head>
   <title>Travel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/node_modules/pouchdb/dist/pouchdb.min.js"></script>
+  <script src="/node_modules/pouchdb/dist/pouchdb.find.min.js"></script>
+  <!-- <script src="/node_modules/marked/lib/marked.esm.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
+  <style>
+    body {
+      margin: 0;
+      --light: #AFA2FF;
+      --dark: #2E294E;
+      --info: #7F9172;
+      --alert: #820263;
+      --background: #FFFFF2;
 
+      background-color: var(--background);
+
+      font-family: "Noto Sans", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+      font-variation-settings:
+        "wdth" 100;
+    }
+  </style>
   <script type="module">
-    import { TravelList } from "./travel-list.js";
-    import { TravelRepo } from "./travel-repo.js";
-    import { TravelView } from "./travel-view.js";
-
-    customElements.define("travel-repo", TravelRepo);
-    customElements.define("travel-list", TravelList);
-    customElements.define("travel-view", TravelView);
+    import { TravelRepo } from "/travel-repo.js";
   </script>
-  <h1>This is a Heading</h1>
-  <p>This is a paragraph.</p>
-  <travel-repo>
-    <!-- <travel-list slot>
-      <template slot="test-slot">Test slot</template>
-    </travel-list> -->
-  </travel-repo>
+  <travel-repo></travel-repo>
 </body>
-
-<template id="travel-repo-template">
-  <slot>Loading...</slot>
-</template>
-
-<template id="travel-list-template">
-  <style>
-    p {
-      color: white;
-      background-color: #666;
-      padding: 5px;
-    }
-  </style>
-  <p>My paragraph</p>
-  <slot name="test-slot"></slot>
-</template>
-
-<template id="travel-view-template">
-  <style>
-    p {
-      background-color: #aaa;
-      padding: 5px;
-    }
-  </style>
-  <h2 id="title"></h2>
-  <p id="description"></p>
-</template>
 
 </html>

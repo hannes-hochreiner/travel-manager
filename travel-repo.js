@@ -1,28 +1,34 @@
+import { ElementCache } from "./element-cache.js";
+import { TravelRouter } from "./travel-router.js";
+import { Repo } from "./repo.js";
+
 export class TravelRepo extends HTMLElement {
+  #ec = null;
+  #repo = null;
+
   constructor() {
     super();
-    let template = document.getElementById("travel-repo-template");
-    const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
-    shadowRoot.appendChild(template.content.cloneNode(true));
+    const shadowRoot = this.attachShadow({
+      mode: "open",
+      slotAssignment: "manual",
+    });
+    shadowRoot.innerHTML = /*html*/ `
+      <slot>Loading...</slot>
+    `;
 
-    setTimeout(() => {
-      let travelList = document.createElement("travel-list");
-      this.appendChild(travelList);
-      travelList.repo = this;
-      shadowRoot.querySelector("slot").assign(travelList);
-      // shadowRoot.querySelector("slot").assign(this.querySelector("[slot]"));
-    }, 2000);
-  }
+    this.#ec = new ElementCache(this.shadowRoot);
 
-  async getTravels() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve([
-          { title: "title 1", description: "description 1" },
-          { title: "title 2", description: "description 2" }
-        ]);
-      }, 2000);
-    })
+    (async () => {
+      try {
+        this.#repo = await Repo.create();
+
+        let travelRouter = new TravelRouter(this.#repo);
+        this.appendChild(travelRouter);
+        this.#ec.get("slot").assign(travelRouter);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
   }
 
   connectedCallback() {
@@ -41,3 +47,5 @@ export class TravelRepo extends HTMLElement {
     console.log(`Attribute ${name} has changed.`);
   }
 }
+
+customElements.define("travel-repo", TravelRepo);
