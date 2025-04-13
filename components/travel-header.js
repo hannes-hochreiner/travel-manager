@@ -6,13 +6,13 @@ export class TravelHeader extends HTMLElement {
     shadowRoot.innerHTML = /*html*/ `
       <style>
         header {
-          background-color: var(--dark);
+          background-color: var(--primary);
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           align-items: baseline;
           padding: 0 1rem;
-          color: var(--light)
+          color: var(--primary-dark);
         }
 
         h1 {

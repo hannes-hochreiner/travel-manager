@@ -16,11 +16,16 @@
   <style>
     body {
       margin: 0;
-      --light: #AFA2FF;
-      --dark: #2E294E;
-      --info: #7F9172;
-      --alert: #820263;
-      --background: #FFFFF2;
+      --primary: hsl(198, 60%, 50%);
+      --primary-light: hsl(198, 60%, 80%);
+      --primary-dark: hsl(198, 60%, 20%);
+      --tertiary: hsl(318, 60%, 50%);
+      --tertiary-light: hsl(318, 60%, 80%);
+      --tertiary-dark: hsl(318, 60%, 20%);
+      --secondary: hsl(78, 60%, 50%);
+      --secondary-light: hsl(78, 60%, 80%);
+      --secondary-dark: hsl(78, 60%, 20%);
+      --background: hsl(60, 100%, 98%);
 
       background-color: var(--background);
 
@@ -34,6 +39,9 @@
   </style>
   <script type="module">
     import { TravelRepo } from "/travel-repo.js";
+    import { default as PouchDb } from "https://esm.run/pouchdb";
+
+    console.log(new PouchDb("travel"));
   </script>
   <travel-repo></travel-repo>
 </body>

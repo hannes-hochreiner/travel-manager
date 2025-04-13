@@ -2,6 +2,7 @@ import { ElementCache } from "../element-cache.js";
 import { TravelEdit } from "../travel-edit.js";
 import { TravelList } from "../travel-list.js";
 import { TravelHeader } from "../components/travel-header.js";
+import { TravelView } from "../travel-view.js";
 
 export class TravelMain extends HTMLElement {
   #ec = null;
@@ -42,10 +43,13 @@ export class TravelMain extends HTMLElement {
     this.#repo = repo;
     this.#ec = new ElementCache(this.shadowRoot);
     this.#ec.get("#add_travel").addEventListener("click", () => this.#addTravel());
-    this.#travelList = new TravelList(
-      (obj) => this.#travelEdit.edit_object(obj,this.edit_complete.bind(this)),
-      (obj) => this.#deleteTravel(obj)
-    );
+    this.#travelList = new TravelList({
+      "travel": {
+        "view": TravelView,
+        "editCb":(obj) => this.#travelEdit.edit_object(obj,this.edit_complete.bind(this)),
+        "deleteCb":(obj) => this.#deleteTravel(obj)
+      }
+    });
     this.appendChild(this.#travelList);
     this.#ec.get("slot[name=list]").assign(this.#travelList);
     this.#travelEdit = new TravelEdit();
@@ -56,7 +60,7 @@ export class TravelMain extends HTMLElement {
   #update() {
     if (this.#repo) {
       (async () => {
-        this.#travelList.travels = await this.#repo.getAllDocs("travel");
+        this.#travelList.objects = await this.#repo.getAllDocs("travel");
       })();
     }
   }

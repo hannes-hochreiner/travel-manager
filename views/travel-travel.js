@@ -1,7 +1,9 @@
 import { ElementCache } from "../element-cache.js";
 // import { TravelEdit } from "./travel-edit.js";
-// import { TravelList } from "./travel-list.js";
+import { TravelList } from "../travel-list.js";
 import { TravelView } from "../travel-view.js";
+import { TravelStayView } from "../components/travel-stay-view.js";
+import { TravelStayEdit } from "../components/travel-stay-edit.js";
 import { TravelHeader } from "../components/travel-header.js";
 
 export class TravelTravel extends HTMLElement {
@@ -9,6 +11,8 @@ export class TravelTravel extends HTMLElement {
   #repo = null;
   #travelId = null;
   #travel = null;
+  #stayEdit = null;
+  #travelList = null;
 
   constructor(repo, params) {
     super();
@@ -34,20 +38,41 @@ export class TravelTravel extends HTMLElement {
           <a href="/">back</a>
           <p id="travelId"></p>
           <slot name="travel"></slot>
+          <slot name="stay-edit"></slot>
+          <slot name="list"></slot>
         </main>
       </div>
     `;
     this.#ec = new ElementCache(this.shadowRoot);
     this.#repo = repo;
     this.#travelId = params["travelId"];
+    this.#ec.get("#add_stay").addEventListener("click", () => this.#addStay());
+    this.#stayEdit = new TravelStayEdit();
+    this.appendChild(this.#stayEdit);
+    this.#ec.get("slot[name=stay-edit]").assign(this.#stayEdit);
+    this.#travelList = new TravelList({
+      "stay": {
+        "view": TravelStayView,
+        "editCb":(obj) => this.#stayEdit.edit_object(obj,this.#editStayComplete.bind(this)),
+        "deleteCb":(obj) => this.#deleteStay(obj)
+      }
+    });
+    this.appendChild(this.#travelList);
+    this.#ec.get("slot[name=list]").assign(this.#travelList);
 
     (async () => {
       this.#travel = await this.#repo.getDoc(this.#travelId);
       let travelElement = new TravelView(this.#travel);
       this.appendChild(travelElement);
       this.#ec.get("slot[name=travel]").assign(travelElement);
+      this.#travelList.objects = await this.#repo.getAllDocs("stay", this.#travelId);
     })();
 
+    this.#update();
+  }
+
+  #deleteStay(stay) {
+    this.#repo.deleteDoc(stay);
     this.#update();
   }
 
@@ -55,12 +80,29 @@ export class TravelTravel extends HTMLElement {
     this.#ec.get("#travelId").innerHTML = this.#travelId;
   }
 
-  connectedCallback() {
-    console.log("TravelTravel added to page.");
+  #updateList() {
+    (async () => {
+      this.#travelList.objects = await this.#repo.getAllDocs("stay", this.#travelId);
+    })();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
+  #addStay() {
+    this.#stayEdit.edit_object({
+      _id: crypto.randomUUID(),
+      type: "stay",
+      title: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      parent: this.#travelId,
+      longitude: 0,
+      latitude: 0
+    },this.#editStayComplete.bind(this));
+  }
+
+  #editStayComplete(obj) {
+    this.#repo.addDoc(obj);
+    this.#updateList();
   }
 }
 

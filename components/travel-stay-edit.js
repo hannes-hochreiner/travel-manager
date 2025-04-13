@@ -1,17 +1,22 @@
-import { ElementCache } from "./element-cache.js";
+import {default as L} from 'https://esm.run/leaflet';
 
-export class TravelEdit extends HTMLElement {
+export class TravelStayEdit extends HTMLElement {
   // static observedAttributes = ["id", "show"];
   #object = null;
-  #ec = null;
   #cb = null;
+  #map = null;
+  #id = null;
 
   constructor() {
     super();
 
+    this.#id = crypto.randomUUID();
+    
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
+        @import "https://unpkg.com/leaflet/dist/leaflet.css";
+
         dialog {
           padding: 0;
         }
@@ -60,6 +65,10 @@ export class TravelEdit extends HTMLElement {
           width: 24px;
           height: 24px;
         }
+
+        #map_${this.#id} {
+          height: 350px;
+        }
       </style>
       <dialog id="dialog">
         <div class="content">
@@ -67,7 +76,12 @@ export class TravelEdit extends HTMLElement {
             <input id="title" />
           </header>
           <main>
+            <input id="startDate" type="date" />
+            <input id="endDate" type="date" />
+            <input id="longitude" type="number" />
+            <input id="latitude" type="number" />
             <textarea id="description"></textarea>
+            <div id="map_${this.#id}"></div>
           </main>
           <footer>
             <button id="button_save" class="action">
@@ -80,33 +94,17 @@ export class TravelEdit extends HTMLElement {
         </div>
       </dialog>
     `;
-    this.#ec = new ElementCache(this.shadowRoot);
+    this.shadowRoot.querySelector("#button_save")
+      .addEventListener("click", () => this.#edit_ok());
+    this.shadowRoot.querySelector("#button_cancel")
+      .addEventListener("click", () => this.#edit_cancel());
   }
-
-  // save() {
-  //   (async () => {
-  //     try {
-  //       const db = new PouchDB("travel");
-  //       await db.put({
-  //         _id: crypto.randomUUID(),
-  //         type: "travel",
-  //         title: this.shadowRoot.querySelector("#title").value,
-  //         description: this.shadowRoot.querySelector("#description").value,
-  //       });
-
-  //       this.show = false;
-  //       console.log("saved");
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   })();
-  // }
 
   set show(show) {
     if (show) {
-      this.#ec.get("#dialog").showModal();
+      this.shadowRoot.querySelector("#dialog").showModal();
     } else {
-      this.#ec.get("#dialog").close();
+      this.shadowRoot.querySelector("#dialog").close();
     }
   }
 
@@ -120,17 +118,17 @@ export class TravelEdit extends HTMLElement {
     this.#object = obj;
     this.#cb = cb;
     this.#object_to_elements();
-    this.#ec.get("#dialog").showModal();
+    this.shadowRoot.querySelector("#dialog").showModal();
   }
 
   #edit_ok() {
-    this.#ec.get("#dialog").close();
+    this.shadowRoot.querySelector("#dialog").close();
     this.#elements_to_object();
     this.#cb(this.#object);
   }
 
   #edit_cancel() {
-    this.#ec.get("#dialog").close();
+    this.shadowRoot.querySelector("#dialog").close();
   }
 
   #object_to_elements() {
@@ -145,7 +143,7 @@ export class TravelEdit extends HTMLElement {
 
   #elements_to_object() {
     Object.keys(this.#object).forEach((key) => {
-      let element = this.#ec.get("#" + key);
+      let element = this.shadowRoot.querySelector("#" + key);
 
       if (element) {
         this.#object[key] = element.value;
@@ -154,18 +152,15 @@ export class TravelEdit extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("TravelEdit added to page.");
-    this.#ec
-      .get("#button_save")
-      .addEventListener("click", () => this.#edit_ok());
-    this.#ec
-      .get("#button_cancel")
-      .addEventListener("click", () => this.#edit_cancel());
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
+    this.#map = L.map(this.shadowRoot.querySelector("#map_" + this.#id)).setView([0, 0], 2);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(this.#map);
+    this.#map.whenReady(() => {
+      this.#map.invalidateSize();
+      console.log("map ready");
+    })
   }
 }
 
-customElements.define("travel-edit", TravelEdit);
+customElements.define("travel-stay-edit", TravelStayEdit);

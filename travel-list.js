@@ -1,10 +1,9 @@
 import { TravelView } from "./travel-view.js";
 
 export class TravelList extends HTMLElement {
-  #editCb = null;
-  #deleteCb = null;
+  #types = null;
 
-  constructor(editCb, deleteCb) {
+  constructor(types) {
     super();
 
     const shadowRoot = this.attachShadow({ mode: "open" });
@@ -17,38 +16,21 @@ export class TravelList extends HTMLElement {
           padding: 5px;
         }
       </style>
-      <p>My paragraph</p>
-      <a href="/travel/f81d4fae-7dec-11d0-a765-00a0c91e6bf6">link</a>
     `;
 
-    this.#editCb = editCb;
-    this.#deleteCb = deleteCb;
+    this.#types = types;
   }
 
-  set travels(travels) {
+  set objects(objects) {
     this.shadowRoot.innerHTML = "";
 
-    travels.forEach((travel) => {
-      let travelViewElement = new TravelView(travel, this.#editCb, this.#deleteCb);
-      // travelViewElement.object = travel;
-      this.shadowRoot.appendChild(travelViewElement);
+    objects.forEach((object) => {
+      let config = this.#types[object.type];
+
+      if (config) {
+        this.shadowRoot.appendChild(new config.view(object, config.editCb, config.deleteCb));
+      }
     });
-  }
-
-  connectedCallback() {
-    console.log("TravelList added to page.");
-  }
-
-  disconnectedCallback() {
-    console.log("Custom element removed from page.");
-  }
-
-  adoptedCallback() {
-    console.log("Custom element moved to new page.");
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
   }
 }
 

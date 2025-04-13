@@ -1,6 +1,6 @@
-import { ElementCache } from "./element-cache.js";
+import { ElementCache } from "../element-cache.js";
 
-export class TravelView extends HTMLElement {
+export class TravelStayView extends HTMLElement {
   // static observedAttributes = ["color", "size"];
   // #object = null;
   // #editCb = null;
@@ -58,6 +58,10 @@ export class TravelView extends HTMLElement {
         </header>
         <main>
           <p id="description"></p>
+          <p id="startDate"></p>
+          <p id="endDate"></p>
+          <p id="longitude"></p>
+          <p id="latitude"></p>
         </main>
         <footer>
           <slot name="edit">
@@ -115,4 +119,4 @@ export class TravelView extends HTMLElement {
   }
 }
 
-customElements.define("travel-view", TravelView);
+customElements.define("travel-stay-view", TravelStayView);
