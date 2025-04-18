@@ -20,6 +20,25 @@ export class TravelTravel extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
+        .breadcrumbs {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin: 1rem 0;
+        }
+
+        .breadcrumbs a {
+          color: var(--primary-dark);
+          text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+          text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+          color: var(--primary-dark);
+        }
       </style>
       <div class="content">
         <travel-header>
@@ -35,7 +54,11 @@ export class TravelTravel extends HTMLElement {
           </div>
         </travel-header>
         <main>
-          <a href="/">back</a>
+          <div class="breadcrumbs">
+            <a href="/">Home</a>
+            <span>/</span>
+            <span>Travel Details</span>
+          </div>
           <p id="travelId"></p>
           <slot name="travel"></slot>
           <slot name="stay-edit"></slot>
