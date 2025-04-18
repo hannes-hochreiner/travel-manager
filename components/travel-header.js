@@ -6,7 +6,7 @@ export class TravelHeader extends HTMLElement {
     shadowRoot.innerHTML = /*html*/ `
       <style>
         header {
-          background-color: var(--primary);
+          background: linear-gradient(45deg, var(--primary-light), var(--primary));
           display: flex;
           flex-direction: row;
           justify-content: space-between;
