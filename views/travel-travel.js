@@ -95,8 +95,7 @@ export class TravelTravel extends HTMLElement {
       startDate: "",
       endDate: "",
       parent: this.#travelId,
-      longitude: 0,
-      latitude: 0
+      position: [0,0]
     },this.#editStayComplete.bind(this));
   }
 

@@ -1,4 +1,4 @@
-import {default as L} from 'https://esm.run/leaflet';
+import { TravelMapEdit } from "./travel-map-edit.js";
 
 export class TravelStayEdit extends HTMLElement {
   // static observedAttributes = ["id", "show"];
@@ -15,7 +15,7 @@ export class TravelStayEdit extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
-        @import "https://unpkg.com/leaflet/dist/leaflet.css";
+        @import "https://cdn.jsdelivr.net/npm/ol@10.5.0/ol.css";
 
         dialog {
           padding: 0;
@@ -78,10 +78,8 @@ export class TravelStayEdit extends HTMLElement {
           <main>
             <input id="startDate" type="date" />
             <input id="endDate" type="date" />
-            <input id="longitude" type="number" />
-            <input id="latitude" type="number" />
             <textarea id="description"></textarea>
-            <div id="map_${this.#id}"></div>
+            <travel-map-edit id="position"></travel-map-edit>
           </main>
           <footer>
             <button id="button_save" class="action">
@@ -109,7 +107,6 @@ export class TravelStayEdit extends HTMLElement {
   }
 
   set object(object) {
-    // console.log(object);
     this.#object = object;
     this.#object_to_elements();
   }
@@ -152,14 +149,6 @@ export class TravelStayEdit extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#map = L.map(this.shadowRoot.querySelector("#map_" + this.#id)).setView([0, 0], 2);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.#map);
-    this.#map.whenReady(() => {
-      this.#map.invalidateSize();
-      console.log("map ready");
-    })
   }
 }
 

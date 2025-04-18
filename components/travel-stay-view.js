@@ -60,8 +60,7 @@ export class TravelStayView extends HTMLElement {
           <p id="description"></p>
           <p id="startDate"></p>
           <p id="endDate"></p>
-          <p id="longitude"></p>
-          <p id="latitude"></p>
+          <p id="position"></p>
         </main>
         <footer>
           <slot name="edit">
