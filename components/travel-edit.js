@@ -1,4 +1,4 @@
-import { ElementCache } from "./element-cache.js";
+import { ElementCache } from "../element-cache.js";
 
 export class TravelEdit extends HTMLElement {
   // static observedAttributes = ["id", "show"];
@@ -82,6 +82,7 @@ export class TravelEdit extends HTMLElement {
     `;
     this.#ec = new ElementCache(this.shadowRoot);
   }
+
 
   // save() {
   //   (async () => {

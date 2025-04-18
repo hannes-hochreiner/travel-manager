@@ -1,8 +1,8 @@
 import { ElementCache } from "../element-cache.js";
-import { TravelEdit } from "../travel-edit.js";
-import { TravelList } from "../travel-list.js";
+import { TravelEdit } from "../components/travel-edit.js";
+import { TravelList } from "../components/travel-list.js";
 import { TravelHeader } from "../components/travel-header.js";
-import { TravelView } from "../travel-view.js";
+import { TravelView } from "../components/travel-view.js";
 
 export class TravelMain extends HTMLElement {
   #ec = null;

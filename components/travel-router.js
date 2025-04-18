@@ -1,6 +1,6 @@
-import { ElementCache } from "./element-cache.js";
-import { TravelMain } from "./views/travel-main.js";
-import { TravelTravel } from "./views/travel-travel.js";
+import { ElementCache } from "../element-cache.js";
+import { TravelMain } from "../views/travel-main.js";
+import { TravelTravel } from "../views/travel-travel.js";
 
 export class TravelRouter extends HTMLElement {
   #ec = null;

@@ -1,7 +1,7 @@
 import { ElementCache } from "../element-cache.js";
 // import { TravelEdit } from "./travel-edit.js";
-import { TravelList } from "../travel-list.js";
-import { TravelView } from "../travel-view.js";
+import { TravelList } from "../components/travel-list.js";
+import { TravelView } from "../components/travel-view.js";
 import { TravelStayView } from "../components/travel-stay-view.js";
 import { TravelStayEdit } from "../components/travel-stay-edit.js";
 import { TravelHeader } from "../components/travel-header.js";

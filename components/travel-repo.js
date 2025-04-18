@@ -1,6 +1,6 @@
-import { ElementCache } from "./element-cache.js";
+import { ElementCache } from "../element-cache.js";
 import { TravelRouter } from "./travel-router.js";
-import { Repo } from "./repo.js";
+import { Repo } from "../repo.js";
 
 export class TravelRepo extends HTMLElement {
   #ec = null;

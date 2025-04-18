@@ -1,4 +1,4 @@
-import { ElementCache } from "./element-cache.js";
+import { ElementCache } from "../element-cache.js";
 
 export class TravelView extends HTMLElement {
   // static observedAttributes = ["color", "size"];
