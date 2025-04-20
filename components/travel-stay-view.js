@@ -37,11 +37,11 @@ export class TravelStayView extends HTMLElement {
         h2 {
           margin: 0;
           font-weight: 700;
-          color: var(--secondary-dark);
+          color: var(--secondary-light);
         }
 
         header {
-          background-color: var(--secondary-light);
+          background: linear-gradient(45deg, var(--secondary-dark), var(--secondary));
           padding: 0.5rem;
         }
 

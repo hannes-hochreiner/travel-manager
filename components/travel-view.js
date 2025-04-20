@@ -41,7 +41,7 @@ export class TravelView extends HTMLElement {
         }
 
         header {
-          background-color: var(--secondary-light);
+          background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
           padding: 0.5rem;
         }
 

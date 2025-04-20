@@ -20,6 +20,15 @@ export class TravelTravel extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
+        div.content {
+          display: flex;
+          flex-direction: column;
+        }
+
+        main {
+          margin: 0 1rem;
+        }
+
         .breadcrumbs {
           display: flex;
           align-items: center;
