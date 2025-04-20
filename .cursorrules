@@ -6,6 +6,8 @@
 
 - Use scoped CSS in the web components for styling.
 
+- Use private methods in components where possible.
+
 - Use icons from the **Material Icons** (https://fonts.google.com/icons) library.
 
 - Use PouchDB for local storage.
