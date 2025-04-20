@@ -68,7 +68,6 @@ export class TravelTravel extends HTMLElement {
             <span>/</span>
             <span>Travel Details</span>
           </div>
-          <p id="travelId"></p>
           <slot name="travel"></slot>
           <slot name="stay-edit"></slot>
           <slot name="list"></slot>
@@ -109,7 +108,7 @@ export class TravelTravel extends HTMLElement {
   }
 
   #update() {
-    this.#ec.get("#travelId").innerHTML = this.#travelId;
+    // this.#ec.get("#travelId").innerHTML = this.#travelId;
   }
 
   #updateList() {

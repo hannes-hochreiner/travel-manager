@@ -52,7 +52,7 @@ export class TravelStayView extends HTMLElement {
       </style>
       <div class="content">
         <header>
-          <a id="details">
+          <a id="details" href="/travel/${object.parent}/stay/${object._id}">
             <h2 id="title"></h2>
           </a>
         </header>
@@ -111,10 +111,10 @@ export class TravelStayView extends HTMLElement {
       }
     });
 
-    this.shadowRoot.querySelector("#details").setAttribute(
-      "href",
-      "/travel/" + object._id
-    );
+    // this.shadowRoot.querySelector("#details").setAttribute(
+    //   "href",
+    //   "/travel/" + object._id
+    // );
   }
 }
 
