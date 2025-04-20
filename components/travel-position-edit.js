@@ -6,7 +6,7 @@ import { Point } from 'https://esm.run/ol/geom';
 import { Style, Icon } from 'https://esm.run/ol/style';
 // import View from 'https://cdn.jsdelivr.net/npm/openlayers@10.5.0/build/ol/View.js';
 
-export class TravelMapEdit extends HTMLElement {
+export class TravelPositionEdit extends HTMLElement {
   #position = null;
   #map = null;
   #icon = null;
@@ -141,4 +141,4 @@ export class TravelMapEdit extends HTMLElement {
   }
 }
 
-customElements.define("travel-map-edit", TravelMapEdit);
+customElements.define("travel-position-edit", TravelPositionEdit);

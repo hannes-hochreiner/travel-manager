@@ -49,11 +49,35 @@ The Travel Manager Project is a web application that allows users to manage thei
 
 ## UI
 
-### Main View
-The main view shows a list of trips. For each trip the title, description, start date, and end date are shown. The trips are in descending order by start date. The user can select a trip to view its details. The main view also contains a button to add a new trip.
+### Pages
+Pages are the different screens of the application.
+As the user navigates through the pages, the location is updated to reflect the current position.
 
-### Trip View
-The trip view shows the details of a particular trip. The trip view also contains a list of stays. For each stay the title, description, start date, and end date are shown. The stays are in ascending order by start date. The trip view also contains a button to add a new stay.
+#### Main Page
+The main page shows a list of trips.
+For each trip the title, description, start date, and end date are shown.
+The trips are in descending order by start date.
+The user can select a trip to navigate to the trip page.
+The main view also contains a button to add a new trip.
+
+#### Trip Page
+The trip page shows the details of a particular trip.
+The trip page also contains a list of stays.
+For each stay the title, description, start date, and end date are shown.
+The stays are in ascending order by start date.
+The trip page also contains a button to add a new stay.
+
+#### Stay Page
+The stay page shows the details of the stay and any attachments and child objects.
+In particular, the stay page contains a list of locations including the title, description, subtype, and coordinates of the location.
+
+### Components
+Components are used on pages to encapsulate certain elements.
+Some components are generic (e.g., travel-list) and can be used with a variety of objects (e.g., trip, stay, location).
+Other components are specific for one type of object (e.g., travel-stay-edit).
+
+#### Position Edit
+The position-edit component allows the user to create or update a position by either specifying the numerical values of the longitude and latitude or by selection the position on a map.
 
 ## User Stories
 

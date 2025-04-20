@@ -1,4 +1,4 @@
-import { TravelMapEdit } from "./travel-map-edit.js";
+import { TravelPositionEdit } from "./travel-position-edit.js";
 
 export class TravelStayEdit extends HTMLElement {
   // static observedAttributes = ["id", "show"];
@@ -79,7 +79,7 @@ export class TravelStayEdit extends HTMLElement {
             <input id="startDate" type="date" />
             <input id="endDate" type="date" />
             <textarea id="description"></textarea>
-            <travel-map-edit id="position"></travel-map-edit>
+            <travel-position-edit id="position"></travel-position-edit>
           </main>
           <footer>
             <button id="button_save" class="action">
