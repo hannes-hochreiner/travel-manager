@@ -3,7 +3,7 @@ import { TripView } from "../components/trip-view.js";
 import { LocationEdit } from "../components/location-edit.js";
 import { LocationView } from "../components/location-view.js";
 import { TravelHeader } from "../components/travel-header.js";
-
+import { TravelMapOverview } from "../components/travel-map-overview.js";
 export class TravelStay extends HTMLElement {
   #repo = null;
   #tripId = null;
@@ -68,6 +68,7 @@ export class TravelStay extends HTMLElement {
           <slot name="travel"></slot>
           <slot name="stay"></slot>
           <slot name="location-edit"></slot>
+          <travel-map-overview></travel-map-overview>
           <slot name="list"></slot>
         </main>
       </div>
@@ -95,7 +96,9 @@ export class TravelStay extends HTMLElement {
       let tripElement = new TripView(this.#trip);
       this.appendChild(tripElement);
       this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
-      this.#locationList.objects = await this.#repo.getAllDocs("location", this.#stayId);
+      let locations = await this.#repo.getAllDocs("location", this.#stayId);
+      this.#locationList.objects = locations;
+      this.shadowRoot.querySelector("travel-map-overview").objects = locations;
     })();
 
     this.#update();
@@ -112,7 +115,9 @@ export class TravelStay extends HTMLElement {
 
   #updateList() {
     (async () => {
-      this.#locationList.objects = await this.#repo.getAllDocs("location", this.#stayId);
+      let locations = await this.#repo.getAllDocs("location", this.#stayId);
+      this.#locationList.objects = locations;
+      this.shadowRoot.querySelector("travel-map-overview").objects = locations;
     })();
   }
 

@@ -83,7 +83,6 @@ export class TravelPositionEdit extends HTMLElement {
         
         <div class="tab-content" data-tab="map">
           <div id="map"></div>
-          <div class="crosshair"></div>
         </div>
       </div>
     `;

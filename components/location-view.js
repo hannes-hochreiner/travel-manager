@@ -44,13 +44,10 @@ export class LocationView extends HTMLElement {
         </style>
         <div class="content">
           <header>
-            <a id="details" href="/trip/${object.parent}/stay/${object._id}">
-              <h2 id="title"></h2>
-            </a>
+            <h2 id="title"></h2>
           </header>
           <main>
             <p id="description"></p>
-            <p id="position"></p>
           </main>
           <footer>
             <slot name="edit">
