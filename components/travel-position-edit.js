@@ -19,50 +19,68 @@ export class TravelPositionEdit extends HTMLElement {
       <style>
         @import "https://cdn.jsdelivr.net/npm/ol@10.5.0/ol.css";
 
-        dialog {
-          padding: 0;
+        .tabs {
+          display: flex;
+          border-bottom: 1px solid #ccc;
+          margin-bottom: 1rem;
         }
-
-        div.content {
+        .tab {
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+          border: 1px solid transparent;
+          border-bottom: none;
+          margin-bottom: -1px;
+          border-radius: 0.25rem 0.25rem 0 0;
+        }
+        .tab.active {
+          background-color: #f5f5f5;
+          border-color: #ccc;
+        }
+        .tab-content {
+          display: none;
+        }
+        .tab-content.active {
+          display: block;
+        }
+        .form-group {
           display: flex;
           flex-direction: column;
-          border: 1px solid;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
         }
-
-        header input {
-          margin: 0;
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: var(--secondary-dark);
-          width: calc(100% - 1rem);
-          background-color: var(--secondary-light);
+        label {
+          font-weight: bold;
         }
-
-        header {
-          background-color: var(--secondary-light);
+        input {
           padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 0.25rem;
         }
-
-        footer {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-        }
-
-        .action {
-          flex-grow: 1;
-        }
-
         #map {
           height: 350px;
         }
       </style>
       <div class="content">
-        <main>
-          <input id="longitude" type="number" />
-          <input id="latitude" type="number" />
+        <div class="tabs">
+          <div class="tab active" data-tab="numerical">Numerical Input</div>
+          <div class="tab" data-tab="map">Map Selection</div>
+        </div>
+        
+        <div class="tab-content active" data-tab="numerical">
+          <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input id="longitude" type="number" step="0.000001" />
+          </div>
+          <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input id="latitude" type="number" step="0.000001" />
+          </div>
+        </div>
+        
+        <div class="tab-content" data-tab="map">
           <div id="map"></div>
-        </main>
+          <div class="crosshair"></div>
+        </div>
       </div>
     `;
 
@@ -108,6 +126,23 @@ export class TravelPositionEdit extends HTMLElement {
     });
   
     this.#map.on('singleclick', this.#mapSingleClick.bind(this));
+
+    // Add tab switching functionality
+    const tabs = this.shadowRoot.querySelectorAll(".tab");
+    tabs.forEach(tab => {
+      tab.onclick = () => this.#switchTab(tab.dataset.tab);
+    });
+  }
+
+  #switchTab(tabName) {
+    const tabs = this.shadowRoot.querySelectorAll(".tab");
+    const contents = this.shadowRoot.querySelectorAll(".tab-content");
+    
+    tabs.forEach(tab => tab.classList.remove("active"));
+    contents.forEach(content => content.classList.remove("active"));
+    
+    this.shadowRoot.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
+    this.shadowRoot.querySelector(`.tab-content[data-tab="${tabName}"]`).classList.add("active");
   }
 
   #mapSingleClick(evt) {

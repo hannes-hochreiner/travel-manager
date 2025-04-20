@@ -19,6 +19,7 @@ export class TravelStayEdit extends HTMLElement {
 
         dialog {
           padding: 0;
+          width: calc(100% - 1rem);
         }
 
         div.content {
@@ -32,7 +33,7 @@ export class TravelStayEdit extends HTMLElement {
           font-size: 1.5rem;
           font-weight: 700;
           color: var(--secondary-dark);
-          width: calc(100% - 1rem);
+          width: calc(100% - 0.5rem);
           background-color: var(--secondary-light);
         }
 
@@ -51,9 +52,16 @@ export class TravelStayEdit extends HTMLElement {
           flex-grow: 1;
         }
 
+        main {
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
         main textarea {
           height: 400px;
-          width: 350px;
+          width: calc(100% - 0.5rem);
         }
 
         p {
@@ -76,7 +84,9 @@ export class TravelStayEdit extends HTMLElement {
             <input id="title" />
           </header>
           <main>
+            <label for="startDate">Start Date</label>
             <input id="startDate" type="date" />
+            <label for="endDate">End Date</label>
             <input id="endDate" type="date" />
             <textarea id="description"></textarea>
             <travel-position-edit id="position"></travel-position-edit>
@@ -146,9 +156,6 @@ export class TravelStayEdit extends HTMLElement {
         this.#object[key] = element.value;
       }
     });
-  }
-
-  connectedCallback() {
   }
 }
 
