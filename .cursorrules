@@ -1,0 +1,11 @@
+# Cursor Rules for the Travel Manager Project
+
+- Use **JavaScript** for all new frontend code.
+
+- Use **Web Components** (custom elements) for all new components.
+
+- Use scoped CSS in the web components for styling.
+
+- Use icons from the **Material Icons** (https://fonts.google.com/icons) library.
+
+- Use PouchDB for local storage.
