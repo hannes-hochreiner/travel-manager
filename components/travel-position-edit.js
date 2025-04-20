@@ -75,6 +75,10 @@ export class TravelPositionEdit extends HTMLElement {
             <label for="latitude">Latitude</label>
             <input id="latitude" type="number" step="0.000001" />
           </div>
+          <div class="form-group">
+            <label for="geoUri">Geo URI</label>
+            <input id="geoUri" type="text" />
+          </div>
         </div>
         
         <div class="tab-content" data-tab="map">
@@ -88,11 +92,13 @@ export class TravelPositionEdit extends HTMLElement {
     
     let longitude = this.shadowRoot.querySelector("#longitude");
     let latitude = this.shadowRoot.querySelector("#latitude");
+    let geoUri = this.shadowRoot.querySelector("#geoUri");
 
     longitude.onchange = this.#longLatChanged.bind(this);
     longitude.value = this.#position[0];
     latitude.onchange = this.#longLatChanged.bind(this);
     latitude.value = this.#position[1];
+    geoUri.onchange = this.#geoUriChanged.bind(this);
 
     this.#icon = new Feature({
       geometry: new Point(fromLonLat(this.#position)),
@@ -159,6 +165,17 @@ export class TravelPositionEdit extends HTMLElement {
     this.#position[1] = parseFloat(this.shadowRoot.querySelector("#latitude").value);
 
     this.#icon.setGeometry(new Point(fromLonLat(this.#position)));
+  }
+
+  #geoUriChanged() {
+    let geoUriElement = this.shadowRoot.querySelector("#geoUri");
+
+    if (geoUriElement.value.startsWith("geo:")) {
+      let parts = geoUriElement.value.split(":")[1].split(",");
+      this.value = [parseFloat(parts[1]), parseFloat(parts[0])];
+    }
+
+    geoUriElement.value = "";
   }
 
   set value(value) {
