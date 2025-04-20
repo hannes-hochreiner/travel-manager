@@ -15,12 +15,13 @@ export class TravelHeader extends HTMLElement {
           color: var(--primary-dark);
         }
 
-        h1 {
-          
+        a {
+          text-decoration: none;
+          color: var(--primary-dark);
         }
       </style>
       <header>
-        <h1>Travel</h1>
+        <a href="/"><h1>Travel</h1></a>
         <slot name="actions"></slot>
       </header>
     `;

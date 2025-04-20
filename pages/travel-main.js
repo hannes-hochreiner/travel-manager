@@ -1,20 +1,21 @@
-import { ElementCache } from "../element-cache.js";
-import { TravelEdit } from "../components/travel-edit.js";
+import { TripEdit } from "../components/trip-edit.js";
 import { TravelList } from "../components/travel-list.js";
 import { TravelHeader } from "../components/travel-header.js";
-import { TravelView } from "../components/travel-view.js";
+import { TripView } from "../components/trip-view.js";
 
 export class TravelMain extends HTMLElement {
-  #ec = null;
   #repo = null;
   #travelList = null;
-  #travelEdit = null;
 
   constructor(repo) {
     super();
+    this.attachShadow({ mode: "open", slotAssignment: "manual", });
+    this.#repo = repo;
+  }
 
-    const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual", });
-    shadowRoot.innerHTML = /*html*/ `
+  async connectedCallback() {
+    // const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual", });
+    this.shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
           display: flex;
@@ -35,38 +36,41 @@ export class TravelMain extends HTMLElement {
           </div>
         </travel-header>
         <main>
-          <slot name="edit"></slot>
+          <trip-edit></trip-edit>
           <slot name="list"></slot>
         </main>
       </div>
     `;
-    this.#repo = repo;
-    this.#ec = new ElementCache(this.shadowRoot);
-    this.#ec.get("#add_travel").addEventListener("click", () => this.#addTravel());
+    // this.#repo = repo;
+    this.shadowRoot.querySelector("#add_travel").addEventListener("click", () => this.#addTravel());
     this.#travelList = new TravelList({
       "travel": {
-        "view": TravelView,
-        "editCb":(obj) => this.#travelEdit.edit_object(obj,this.edit_complete.bind(this)),
+        "view": TripView,
+        "editCb":(obj) => this.shadowRoot.querySelector("trip-edit").edit_object(obj,this.edit_complete.bind(this)),
         "deleteCb":(obj) => this.#deleteTravel(obj)
       }
     });
     this.appendChild(this.#travelList);
-    this.#ec.get("slot[name=list]").assign(this.#travelList);
-    this.#travelEdit = new TravelEdit();
-    this.appendChild(this.#travelEdit);
-    this.#ec.get("slot[name=edit]").assign(this.#travelEdit);
+    this.shadowRoot.querySelector("slot[name=list]").assign(this.#travelList);
+    // this.#travelEdit = new TravelEdit();
+    // this.appendChild(this.#travelEdit);
+    // this.shadowRoot.querySelector("slot[name=edit]").assign(this.#travelEdit);
+    console.log("triggering update");
+    this.#update();
   }
 
   #update() {
+    console.log("update", this.#repo);
     if (this.#repo) {
       (async () => {
+        console.log("update");
         this.#travelList.objects = await this.#repo.getAllDocs("travel");
       })();
     }
   }
 
   #addTravel() {
-    this.#travelEdit.edit_object({
+    this.shadowRoot.querySelector("trip-edit").edit_object({
       _id: crypto.randomUUID(),
       type: "travel",
       title: "",
@@ -84,13 +88,6 @@ export class TravelMain extends HTMLElement {
     this.#update();
   }
 
-  connectedCallback() {
-    this.#update();
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
-  }
 }
 
 customElements.define("travel-main", TravelMain);

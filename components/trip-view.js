@@ -1,12 +1,4 @@
-import { ElementCache } from "../element-cache.js";
-
-export class TravelStayView extends HTMLElement {
-  // static observedAttributes = ["color", "size"];
-  // #object = null;
-  // #editCb = null;
-  // #deleteCb = null;
-  #ec = null;
-
+export class TripView extends HTMLElement {
   constructor(object, editCb, deleteCb) {
     super();
 
@@ -37,11 +29,11 @@ export class TravelStayView extends HTMLElement {
         h2 {
           margin: 0;
           font-weight: 700;
-          color: var(--secondary-light);
+          color: var(--secondary-dark);
         }
 
         header {
-          background: linear-gradient(45deg, var(--secondary-dark), var(--secondary));
+          background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
           padding: 0.5rem;
         }
 
@@ -52,15 +44,12 @@ export class TravelStayView extends HTMLElement {
       </style>
       <div class="content">
         <header>
-          <a id="details" href="/travel/${object.parent}/stay/${object._id}">
+          <a id="details" href="/trip/${object._id}">
             <h2 id="title"></h2>
           </a>
         </header>
         <main>
           <p id="description"></p>
-          <p id="startDate"></p>
-          <p id="endDate"></p>
-          <p id="position"></p>
         </main>
         <footer>
           <slot name="edit">
@@ -77,22 +66,18 @@ export class TravelStayView extends HTMLElement {
       </div>
     `;
 
-    this.#ec = new ElementCache(this.shadowRoot);
-
     if (editCb) {
-      this.#ec
-        .get("#button_edit")
+      this.shadowRoot.querySelector("#button_edit")
         .addEventListener("click", () => editCb(object));
     } else {
-      this.#ec.get("slot[name=edit]").remove();
+      this.shadowRoot.querySelector("slot[name=edit]").remove();
     }
 
     if (deleteCb) {
-      this.#ec
-        .get("#button_delete")
+      this.shadowRoot.querySelector("#button_delete")
         .addEventListener("click", () => deleteCb(object));
     } else {
-      this.#ec.get("slot[name=delete]").remove();
+      this.shadowRoot.querySelector("slot[name=delete]").remove();
     }
 
     this.update(object);
@@ -110,12 +95,7 @@ export class TravelStayView extends HTMLElement {
         }
       }
     });
-
-    // this.shadowRoot.querySelector("#details").setAttribute(
-    //   "href",
-    //   "/travel/" + object._id
-    // );
   }
 }
 
-customElements.define("travel-stay-view", TravelStayView);
+customElements.define("trip-view", TripView);

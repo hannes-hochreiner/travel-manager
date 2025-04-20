@@ -1,19 +1,21 @@
-import { ElementCache } from "../element-cache.js";
+import { TravelPositionEdit } from "./travel-position-edit.js";
 
-export class TravelEdit extends HTMLElement {
-  // static observedAttributes = ["id", "show"];
+export class LocationEdit extends HTMLElement {
   #object = null;
-  #ec = null;
   #cb = null;
+  #id = null;
 
   constructor() {
     super();
 
+    this.#id = crypto.randomUUID();
+    
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
         dialog {
           padding: 0;
+          width: calc(100% - 1rem);
         }
 
         div.content {
@@ -27,7 +29,7 @@ export class TravelEdit extends HTMLElement {
           font-size: 1.5rem;
           font-weight: 700;
           color: var(--secondary-dark);
-          width: calc(100% - 1rem);
+          width: calc(100% - 0.5rem);
           background-color: var(--secondary-light);
         }
 
@@ -46,9 +48,16 @@ export class TravelEdit extends HTMLElement {
           flex-grow: 1;
         }
 
+        main {
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
         main textarea {
           height: 400px;
-          width: 350px;
+          width: calc(100% - 0.5rem);
         }
 
         p {
@@ -60,6 +69,10 @@ export class TravelEdit extends HTMLElement {
           width: 24px;
           height: 24px;
         }
+
+        #map_${this.#id} {
+          height: 350px;
+        }
       </style>
       <dialog id="dialog">
         <div class="content">
@@ -68,6 +81,7 @@ export class TravelEdit extends HTMLElement {
           </header>
           <main>
             <textarea id="description"></textarea>
+            <travel-position-edit id="position"></travel-position-edit>
           </main>
           <footer>
             <button id="button_save" class="action">
@@ -80,39 +94,21 @@ export class TravelEdit extends HTMLElement {
         </div>
       </dialog>
     `;
-    this.#ec = new ElementCache(this.shadowRoot);
+    this.shadowRoot.querySelector("#button_save")
+      .addEventListener("click", () => this.#edit_ok());
+    this.shadowRoot.querySelector("#button_cancel")
+      .addEventListener("click", () => this.#edit_cancel());
   }
-
-
-  // save() {
-  //   (async () => {
-  //     try {
-  //       const db = new PouchDB("travel");
-  //       await db.put({
-  //         _id: crypto.randomUUID(),
-  //         type: "travel",
-  //         title: this.shadowRoot.querySelector("#title").value,
-  //         description: this.shadowRoot.querySelector("#description").value,
-  //       });
-
-  //       this.show = false;
-  //       console.log("saved");
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   })();
-  // }
 
   set show(show) {
     if (show) {
-      this.#ec.get("#dialog").showModal();
+      this.shadowRoot.querySelector("#dialog").showModal();
     } else {
-      this.#ec.get("#dialog").close();
+      this.shadowRoot.querySelector("#dialog").close();
     }
   }
 
   set object(object) {
-    // console.log(object);
     this.#object = object;
     this.#object_to_elements();
   }
@@ -121,17 +117,17 @@ export class TravelEdit extends HTMLElement {
     this.#object = obj;
     this.#cb = cb;
     this.#object_to_elements();
-    this.#ec.get("#dialog").showModal();
+    this.shadowRoot.querySelector("#dialog").showModal();
   }
 
   #edit_ok() {
-    this.#ec.get("#dialog").close();
+    this.shadowRoot.querySelector("#dialog").close();
     this.#elements_to_object();
     this.#cb(this.#object);
   }
 
   #edit_cancel() {
-    this.#ec.get("#dialog").close();
+    this.shadowRoot.querySelector("#dialog").close();
   }
 
   #object_to_elements() {
@@ -146,27 +142,13 @@ export class TravelEdit extends HTMLElement {
 
   #elements_to_object() {
     Object.keys(this.#object).forEach((key) => {
-      let element = this.#ec.get("#" + key);
+      let element = this.shadowRoot.querySelector("#" + key);
 
       if (element) {
         this.#object[key] = element.value;
       }
     });
   }
-
-  connectedCallback() {
-    console.log("TravelEdit added to page.");
-    this.#ec
-      .get("#button_save")
-      .addEventListener("click", () => this.#edit_ok());
-    this.#ec
-      .get("#button_cancel")
-      .addEventListener("click", () => this.#edit_cancel());
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
-  }
 }
 
-customElements.define("travel-edit", TravelEdit);
+customElements.define("location-edit", LocationEdit);

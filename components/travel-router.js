@@ -1,16 +1,20 @@
-import { ElementCache } from "../element-cache.js";
-import { TravelMain } from "../views/travel-main.js";
-import { TravelTravel } from "../views/travel-travel.js";
+import { TravelMain } from "../pages/travel-main.js";
+import { TravelTrip } from "../pages/travel-trip.js";
+import { TravelStay } from "../pages/travel-stay.js";
 
 export class TravelRouter extends HTMLElement {
-  #ec = null;
   #repo = null;
   #slotContent = null;
   #routes = [
     {
       route:
-        /^\/travel\/(?<travelId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/,
-      class: TravelTravel,
+        /^\/trip\/(?<tripId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/stay\/(?<stayId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/,
+      class: TravelStay,
+    },
+    {
+      route:
+        /^\/trip\/(?<tripId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/,
+      class: TravelTrip,
     },
     {
       route: /[\s\S]*/,
@@ -30,20 +34,10 @@ export class TravelRouter extends HTMLElement {
       </style>
       <slot><div id="default">Loading TravelRouter...</div></slot>
     `;
-    this.#ec = new ElementCache(this.shadowRoot);
     this.#repo = repo;
   }
 
-  // set repo(repo) {
-  //   this.#repo = repo;
-
-  //   if (this.#slotContent) {
-  //     this.#slotContent.repo = this.#repo;
-  //   }
-  // }
-
   #navigate(event) {
-    // console.log("...navigating...");
     // Exit early if this navigation shouldn't be intercepted,
     // e.g. if the navigation is cross-origin, or a download request
     if (!event.canIntercept) {
@@ -82,15 +76,7 @@ export class TravelRouter extends HTMLElement {
 
     this.#slotContent = new type(this.#repo, groups);
     this.appendChild(this.#slotContent);
-    // this.#slotContent.repo = this.#repo;
-    
-    // if (groups) {
-    //   for (const [key, value] of Object.entries(groups)) {
-    //     this.#slotContent[key] = value;
-    //   }
-    // }
-
-    this.#ec.get("slot").assign(this.#slotContent);
+    this.shadowRoot.querySelector("slot").assign(this.#slotContent);
   }
 
   connectedCallback() {
@@ -103,10 +89,6 @@ export class TravelRouter extends HTMLElement {
         break;
       }
     }
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
   }
 }
 

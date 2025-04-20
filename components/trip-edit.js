@@ -1,25 +1,15 @@
-import { TravelPositionEdit } from "./travel-position-edit.js";
-
-export class TravelStayEdit extends HTMLElement {
-  // static observedAttributes = ["id", "show"];
+export class TripEdit extends HTMLElement {
   #object = null;
   #cb = null;
-  #map = null;
-  #id = null;
 
   constructor() {
     super();
 
-    this.#id = crypto.randomUUID();
-    
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = /*html*/ `
       <style>
-        @import "https://cdn.jsdelivr.net/npm/ol@10.5.0/ol.css";
-
         dialog {
           padding: 0;
-          width: calc(100% - 1rem);
         }
 
         div.content {
@@ -33,7 +23,7 @@ export class TravelStayEdit extends HTMLElement {
           font-size: 1.5rem;
           font-weight: 700;
           color: var(--secondary-dark);
-          width: calc(100% - 0.5rem);
+          width: calc(100% - 1rem);
           background-color: var(--secondary-light);
         }
 
@@ -52,16 +42,9 @@ export class TravelStayEdit extends HTMLElement {
           flex-grow: 1;
         }
 
-        main {
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
         main textarea {
           height: 400px;
-          width: calc(100% - 0.5rem);
+          width: 350px;
         }
 
         p {
@@ -73,10 +56,6 @@ export class TravelStayEdit extends HTMLElement {
           width: 24px;
           height: 24px;
         }
-
-        #map_${this.#id} {
-          height: 350px;
-        }
       </style>
       <dialog id="dialog">
         <div class="content">
@@ -84,12 +63,7 @@ export class TravelStayEdit extends HTMLElement {
             <input id="title" />
           </header>
           <main>
-            <label for="startDate">Start Date</label>
-            <input id="startDate" type="date" />
-            <label for="endDate">End Date</label>
-            <input id="endDate" type="date" />
             <textarea id="description"></textarea>
-            <travel-position-edit id="position"></travel-position-edit>
           </main>
           <footer>
             <button id="button_save" class="action">
@@ -102,10 +76,6 @@ export class TravelStayEdit extends HTMLElement {
         </div>
       </dialog>
     `;
-    this.shadowRoot.querySelector("#button_save")
-      .addEventListener("click", () => this.#edit_ok());
-    this.shadowRoot.querySelector("#button_cancel")
-      .addEventListener("click", () => this.#edit_cancel());
   }
 
   set show(show) {
@@ -157,6 +127,13 @@ export class TravelStayEdit extends HTMLElement {
       }
     });
   }
+
+  connectedCallback() {
+    this.shadowRoot.querySelector("#button_save")
+      .addEventListener("click", () => this.#edit_ok());
+    this.shadowRoot.querySelector("#button_cancel")
+      .addEventListener("click", () => this.#edit_cancel());
+  }
 }
 
-customElements.define("travel-stay-edit", TravelStayEdit);
+customElements.define("trip-edit", TripEdit);

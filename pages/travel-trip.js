@@ -1,18 +1,15 @@
-import { ElementCache } from "../element-cache.js";
-// import { TravelEdit } from "./travel-edit.js";
 import { TravelList } from "../components/travel-list.js";
-import { TravelView } from "../components/travel-view.js";
-import { TravelStayView } from "../components/travel-stay-view.js";
-import { TravelStayEdit } from "../components/travel-stay-edit.js";
+import { TripView } from "../components/trip-view.js";
+import { StayView } from "../components/stay-view.js";
+import { StayEdit } from "../components/stay-edit.js";
 import { TravelHeader } from "../components/travel-header.js";
 
-export class TravelTravel extends HTMLElement {
-  #ec = null;
+export class TravelTrip extends HTMLElement {
   #repo = null;
-  #travelId = null;
-  #travel = null;
+  #tripId = null;
+  #trip = null;
   #stayEdit = null;
-  #travelList = null;
+  #stayList = null;
 
   constructor(repo, params) {
     super();
@@ -74,29 +71,28 @@ export class TravelTravel extends HTMLElement {
         </main>
       </div>
     `;
-    this.#ec = new ElementCache(this.shadowRoot);
     this.#repo = repo;
-    this.#travelId = params["travelId"];
-    this.#ec.get("#add_stay").addEventListener("click", () => this.#addStay());
-    this.#stayEdit = new TravelStayEdit();
+    this.#tripId = params["tripId"];
+    this.shadowRoot.querySelector("#add_stay").addEventListener("click", () => this.#addStay());
+    this.#stayEdit = new StayEdit();
     this.appendChild(this.#stayEdit);
-    this.#ec.get("slot[name=stay-edit]").assign(this.#stayEdit);
-    this.#travelList = new TravelList({
+    this.shadowRoot.querySelector("slot[name=stay-edit]").assign(this.#stayEdit);
+    this.#stayList = new TravelList({
       "stay": {
-        "view": TravelStayView,
+        "view": StayView,
         "editCb":(obj) => this.#stayEdit.edit_object(obj,this.#editStayComplete.bind(this)),
         "deleteCb":(obj) => this.#deleteStay(obj)
       }
     });
-    this.appendChild(this.#travelList);
-    this.#ec.get("slot[name=list]").assign(this.#travelList);
+    this.appendChild(this.#stayList);
+    this.shadowRoot.querySelector("slot[name=list]").assign(this.#stayList);
 
     (async () => {
-      this.#travel = await this.#repo.getDoc(this.#travelId);
-      let travelElement = new TravelView(this.#travel);
-      this.appendChild(travelElement);
-      this.#ec.get("slot[name=travel]").assign(travelElement);
-      this.#travelList.objects = await this.#repo.getAllDocs("stay", this.#travelId);
+      this.#trip = await this.#repo.getDoc(this.#tripId);
+      let tripElement = new TripView(this.#trip);
+      this.appendChild(tripElement);
+      this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
+      this.#stayList.objects = await this.#repo.getAllDocs("stay", this.#tripId);
     })();
 
     this.#update();
@@ -108,12 +104,12 @@ export class TravelTravel extends HTMLElement {
   }
 
   #update() {
-    // this.#ec.get("#travelId").innerHTML = this.#travelId;
+    // this.shadowRoot.querySelector("#tripId").innerHTML = this.#tripId;
   }
 
   #updateList() {
     (async () => {
-      this.#travelList.objects = await this.#repo.getAllDocs("stay", this.#travelId);
+      this.#stayList.objects = await this.#repo.getAllDocs("stay", this.#tripId);
     })();
   }
 
@@ -125,7 +121,7 @@ export class TravelTravel extends HTMLElement {
       description: "",
       startDate: "",
       endDate: "",
-      parent: this.#travelId,
+      parent: this.#tripId,
       position: [0,0]
     },this.#editStayComplete.bind(this));
   }
@@ -136,4 +132,4 @@ export class TravelTravel extends HTMLElement {
   }
 }
 
-customElements.define("travel-travel", TravelTravel);
+customElements.define("travel-trip", TravelTrip);

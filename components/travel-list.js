@@ -1,4 +1,4 @@
-import { TravelView } from "./travel-view.js";
+import { TripView } from "./trip-view.js";
 
 export class TravelList extends HTMLElement {
   #types = null;
