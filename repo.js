@@ -1,9 +1,14 @@
+import { default as PouchDb } from "https://esm.run/pouchdb";
+import { default as PouchDbFind } from "https://esm.run/pouchdb-find";
+
 export class Repo {
   #db = null;
 
   static async create() {
     let repo = new Repo();
-    repo.#db = new PouchDB("travel");
+    
+    PouchDb.plugin(PouchDbFind);
+    repo.#db = new PouchDb("travel");
 
     try {
       await repo.#db.createIndex({
