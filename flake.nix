@@ -11,11 +11,19 @@
     pkgs = import nixpkgs {
       inherit system;
     };
+    travel-manager = derivation {
+      inherit system;
+      name = "travel-manager-v0.0.1";
+      builder = "${pkgs.nushell}/bin/nu";
+      buildInputs = with pkgs; [
+        # gcc_multi
+        # rust-bin-custom
+        uutils-coreutils-noprefix
+      ];
+      args = [ ./builder.nu "build" ./. ];
+    };
   in {
-
-    # packages.${system}.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    # packages.${system}.default = self.packages.x86_64-linux.hello;
+    packages.${system}.default = travel-manager;
 
     devShells.${system}.default = pkgs.mkShell {
       name = "travel-app";
