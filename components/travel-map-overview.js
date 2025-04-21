@@ -66,39 +66,52 @@ export class TravelMapOverview extends HTMLElement {
     let lat_min = 90;
     this.#vectorSource.clear();
     this.#map.getOverlays().forEach(overlay => this.#map.removeOverlay(overlay));
-    this.#vectorSource.addFeatures(objects.map(object => {
-      long_max = Math.max(long_max, object.position[0]);
-      long_min = Math.min(long_min, object.position[0]);
-      lat_max = Math.max(lat_max, object.position[1]);
-      lat_min = Math.min(lat_min, object.position[1]);
 
-      let feature = new Feature({
-        geometry: new Point(fromLonLat(object.position)),
-      });
+    if (objects && objects.length > 0) {
+      this.#vectorSource.addFeatures(objects.map(object => {
+        let position = object.position || [0, 0];
+        long_max = Math.max(long_max, position[0]);
+        long_min = Math.min(long_min, position[0]);
+        lat_max = Math.max(lat_max, position[1]);
+        lat_min = Math.min(lat_min, position[1]);
 
-      feature.setStyle([this.#iconStyle]);
+        let feature = new Feature({
+          geometry: new Point(fromLonLat(position)),
+        });
 
-      let overlayElement = document.createElement('div');
-      overlayElement.innerHTML = /*html*/ `
-        <div class="overlay-content">
-          <p>${object.title}</p>
-        </div>
-      `;
+        feature.setStyle([this.#iconStyle]);
+
+        let overlayElement = document.createElement('div');
+        overlayElement.innerHTML = /*html*/ `
+          <div class="overlay-content">
+            <p>${object.title}</p>
+          </div>
+        `;
   
-      this.#map.addOverlay(new Overlay({
-        position: fromLonLat(object.position),
-        positioning: 'top-center',
-        element: overlayElement,
+        this.#map.addOverlay(new Overlay({
+          position: fromLonLat(position),
+          positioning: 'top-center',
+          element: overlayElement,
+        }));
+  
+        return feature;
       }));
-  
-      return feature;
-    }));
 
-    let min = fromLonLat([long_min, lat_min]);
-    let max = fromLonLat([long_max, lat_max]);
+      let min = fromLonLat([long_min, lat_min]);
+      let max = fromLonLat([long_max, lat_max]);
 
-    this.#map.getView().fit([min[0], min[1], max[0], max[1]], {
-      padding: [100, 100, 100, 100],
+      this.#map.getView().fit([min[0], min[1], max[0], max[1]], {
+        padding: [100, 100, 100, 100],
+        maxZoom: 15,
+      });
+    }
+  }
+
+  async getBlob() {
+    return new Promise((resolve, reject) => {
+      this.shadowRoot.querySelector("canvas").toBlob((blob) => {
+        resolve(blob);
+      });
     });
   }
 }

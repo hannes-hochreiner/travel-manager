@@ -66,6 +66,7 @@ export class TravelTrip extends HTMLElement {
             <span>Travel Details</span>
           </div>
           <slot name="travel"></slot>
+          <travel-map-overview></travel-map-overview>
           <slot name="stay-edit"></slot>
           <slot name="list"></slot>
         </main>
@@ -92,7 +93,9 @@ export class TravelTrip extends HTMLElement {
       let tripElement = new TripView(this.#trip);
       this.appendChild(tripElement);
       this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
-      this.#stayList.objects = await this.#repo.getAllDocs("stay", this.#tripId);
+      let stays = await this.#repo.getAllDocs("stay", this.#tripId);
+      this.#stayList.objects = stays;
+      this.shadowRoot.querySelector("travel-map-overview").objects = stays;
     })();
 
     this.#update();
@@ -100,7 +103,7 @@ export class TravelTrip extends HTMLElement {
 
   #deleteStay(stay) {
     this.#repo.deleteDoc(stay);
-    this.#update();
+    this.#updateList();
   }
 
   #update() {
@@ -109,7 +112,11 @@ export class TravelTrip extends HTMLElement {
 
   #updateList() {
     (async () => {
-      this.#stayList.objects = await this.#repo.getAllDocs("stay", this.#tripId);
+      let stays = await this.#repo.getAllDocs("stay", this.#tripId);
+      this.#stayList.objects = stays;
+      this.shadowRoot.querySelector("travel-map-overview").objects = stays;
+      // let blob = await this.shadowRoot.querySelector("travel-map-overview").getBlob();
+      // console.log(blob);
     })();
   }
 
