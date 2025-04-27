@@ -14,8 +14,12 @@ export class TravelTrip extends HTMLElement {
 
   constructor(repo, params) {
     super();
-
+    this.#repo = repo;
+    this.#tripId = params["tripId"];
     const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
+  }
+
+  async connectedCallback() {
     shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
@@ -74,8 +78,6 @@ export class TravelTrip extends HTMLElement {
         </main>
       </div>
     `;
-    this.#repo = repo;
-    this.#tripId = params["tripId"];
     this.shadowRoot.querySelector("#add_stay").addEventListener("click", () => this.#addStay());
     this.#stayEdit = new StayEdit();
     this.appendChild(this.#stayEdit);
@@ -90,17 +92,15 @@ export class TravelTrip extends HTMLElement {
     this.appendChild(this.#stayList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#stayList);
 
-    (async () => {
-      this.#trip = await this.#repo.getDoc(this.#tripId);
-      let tripElement = new TripView(this.#trip);
-      this.appendChild(tripElement);
-      this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
-      let stays = await this.#repo.getAllDocs("stay", this.#tripId);
-      this.#stayList.objects = stays;
-      this.shadowRoot.querySelector("travel-map-overview").objects = stays;
-    })();
+    this.#trip = await this.#repo.getDoc(this.#tripId);
+    let tripElement = new TripView(this.#trip);
+    this.appendChild(tripElement);
+    this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
+    let stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stayList.objects = stays;
+    this.shadowRoot.querySelector("travel-map-overview").objects = stays;
 
-    this.#update();
+    await this.#update();
   }
 
   #deleteStay(stay) {
@@ -110,29 +110,25 @@ export class TravelTrip extends HTMLElement {
       <div slot="title">Delete ${stay.title}</div>
       <div slot="message">Are you sure you want to delete ${stay.title}?</div>
     `;
-    tc.addEventListener("confirmed", () => {
+    tc.addEventListener("confirmed", async () => {
       tc.show = false;
-      (async () => {
         await this.#repo.deleteDoc(stay);
         this.#update();
-      })();
-    })
+    });
     tc.show = true;
   }
 
-  #update() {
-    this.#updateList();
+  async #update() {
+    await this.#updateList();
     // this.shadowRoot.querySelector("#tripId").innerHTML = this.#tripId;
   }
 
-  #updateList() {
-    (async () => {
-      let stays = await this.#repo.getAllDocs("stay", this.#tripId);
-      this.#stayList.objects = stays;
-      this.shadowRoot.querySelector("travel-map-overview").objects = stays;
-      // let blob = await this.shadowRoot.querySelector("travel-map-overview").getBlob();
-      // console.log(blob);
-    })();
+  async #updateList() {
+    let stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stayList.objects = stays;
+    this.shadowRoot.querySelector("travel-map-overview").objects = stays;
+    // let blob = await this.shadowRoot.querySelector("travel-map-overview").getBlob();
+    // console.log(blob);
   }
 
   #addStay() {
@@ -149,8 +145,9 @@ export class TravelTrip extends HTMLElement {
   }
 
   #editStayComplete(obj) {
-    this.#repo.addDoc(obj);
-    this.#updateList();
+    this.#repo.addDoc(obj).then(async () => {
+      await this.#updateList();
+    })
   }
 }
 

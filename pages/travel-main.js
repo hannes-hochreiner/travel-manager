@@ -86,24 +86,18 @@ export class TravelMain extends HTMLElement {
       this.shadowRoot.querySelector("travel-login").show = true;
     });
 
-    this.shadowRoot.querySelector("#sync").addEventListener("click", (e) => {
-      (async () => {
+    this.shadowRoot.querySelector("#sync").addEventListener("click", async (e) => {
         await this.#repo.sync();
         console.log("triggering update");
-        this.#update();
-      })();
+        await this.#update();
     });
     console.log("triggering update");
-    this.#update();
+    await this.#update();
   }
 
-  #update() {
-    console.log("update", this.#repo);
+  async #update() {
     if (this.#repo) {
-      (async () => {
-        console.log("update");
         this.#travelList.objects = await this.#repo.getAllDocs("travel");
-      })();
     }
   }
 
@@ -117,8 +111,9 @@ export class TravelMain extends HTMLElement {
   }
 
   edit_complete(obj) {
-    this.#repo.addDoc(obj);
-    this.#update();
+    this.#repo.addDoc(obj).then(() => {
+      this.#update();
+    });
   }
 
   #deleteTravel(travel) {
@@ -128,16 +123,13 @@ export class TravelMain extends HTMLElement {
       <div slot="title">Delete ${travel.title}</div>
       <div slot="message">Are you sure you want to delete ${travel.title}?</div>
     `;
-    tc.addEventListener("confirmed", () => {
+    tc.addEventListener("confirmed", async () => {
       tc.show = false;
-      (async () => {
-        await this.#repo.deleteDoc(travel);
-        this.#update();
-      })();
+      await this.#repo.deleteDoc(travel);
+      await this.#update();
     })
     tc.show = true;
   }
-
 }
 
 customElements.define("travel-main", TravelMain);

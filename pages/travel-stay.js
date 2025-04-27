@@ -17,8 +17,13 @@ export class TravelStay extends HTMLElement {
 
   constructor(repo, params) {
     super();
-
+    this.#repo = repo;
+    this.#tripId = params["tripId"];
+    this.#stayId = params["stayId"];
     const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
+  }
+  
+  async connectedCallback() {
     shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
@@ -76,9 +81,6 @@ export class TravelStay extends HTMLElement {
         </main>
       </div>
     `;
-    this.#repo = repo;
-    this.#tripId = params["tripId"];
-    this.#stayId = params["stayId"];
     this.shadowRoot.querySelector("#add_location").addEventListener("click", () => this.#addLocation());
     this.#locationEdit = new LocationEdit();
     this.appendChild(this.#locationEdit);
@@ -93,18 +95,16 @@ export class TravelStay extends HTMLElement {
     this.appendChild(this.#locationList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#locationList);
 
-    (async () => {
-      this.#trip = await this.#repo.getDoc(this.#tripId);
-      this.#stay = await this.#repo.getDoc(this.#stayId);
-      let tripElement = new TripView(this.#trip);
-      this.appendChild(tripElement);
-      this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
-      let locations = await this.#repo.getAllDocs("location", this.#stayId);
-      this.#locationList.objects = locations;
-      this.shadowRoot.querySelector("travel-map-overview").objects = locations;
-    })();
+    this.#trip = await this.#repo.getDoc(this.#tripId);
+    this.#stay = await this.#repo.getDoc(this.#stayId);
+    let tripElement = new TripView(this.#trip);
+    this.appendChild(tripElement);
+    this.shadowRoot.querySelector("slot[name=travel]").assign(tripElement);
+    let locations = await this.#repo.getAllDocs("location", this.#stayId);
+    this.#locationList.objects = locations;
+    this.shadowRoot.querySelector("travel-map-overview").objects = locations;
 
-    this.#update();
+    await this.#update();
   }
 
   #deleteLocation(location) {
@@ -114,26 +114,22 @@ export class TravelStay extends HTMLElement {
       <div slot="title">Delete ${location.title}</div>
       <div slot="message">Are you sure you want to delete ${location.title}?</div>
     `;
-    tc.addEventListener("confirmed", () => {
+    tc.addEventListener("confirmed", async () => {
       tc.show = false;
-      (async () => {
-        await this.#repo.deleteDoc(location);
-        this.#update();
-      })();
+      await this.#repo.deleteDoc(location);
+      await this.#update();
     })
     tc.show = true;
   }
 
-  #update() {
-    this.#updateList();
+  async #update() {
+    await this.#updateList();
   }
 
-  #updateList() {
-    (async () => {
-      let locations = await this.#repo.getAllDocs("location", this.#stayId);
-      this.#locationList.objects = locations;
-      this.shadowRoot.querySelector("travel-map-overview").objects = locations;
-    })();
+  async #updateList() {
+    let locations = await this.#repo.getAllDocs("location", this.#stayId);
+    this.#locationList.objects = locations;
+    this.shadowRoot.querySelector("travel-map-overview").objects = locations;
   }
 
   #addLocation() {
@@ -148,8 +144,9 @@ export class TravelStay extends HTMLElement {
   }
 
   #editLocationComplete(obj) {
-    this.#repo.addDoc(obj);
-    this.#updateList();
+    this.#repo.addDoc(obj),then(async () => {
+      await this.#updateList();
+    });
   }
 }
 
