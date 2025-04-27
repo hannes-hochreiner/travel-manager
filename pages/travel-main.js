@@ -11,12 +11,11 @@ export class TravelMain extends HTMLElement {
 
   constructor(repo) {
     super();
-    this.attachShadow({ mode: "open", slotAssignment: "manual", });
     this.#repo = repo;
   }
 
   async connectedCallback() {
-    // const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual", });
+    this.attachShadow({ mode: "open", slotAssignment: "manual", });
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {

@@ -16,11 +16,11 @@ export class TravelTrip extends HTMLElement {
     super();
     this.#repo = repo;
     this.#tripId = params["tripId"];
-    const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
   }
 
   async connectedCallback() {
-    shadowRoot.innerHTML = /*html*/ `
+    this.attachShadow({ mode: "open", slotAssignment: "manual" });
+    this.shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
           display: flex;

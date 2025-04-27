@@ -1,10 +1,9 @@
-import { Map, View, Feature, Overlay } from 'https://esm.run/ol';
-import { toLonLat, fromLonLat } from 'https://esm.run/ol/proj';
-import { OSM, Vector as VectorSource } from 'https://esm.run/ol/source';
-import { Tile as TileLayer, Vector as VectorLayer } from 'https://esm.run/ol/layer';
-import { Point } from 'https://esm.run/ol/geom';
-import { Style, Icon } from 'https://esm.run/ol/style';
-// import View from 'https://cdn.jsdelivr.net/npm/openlayers@10.5.0/build/ol/View.js';
+import { Map, View, Feature, Overlay } from 'https://cdn.jsdelivr.net/npm/ol/+esm';
+import { toLonLat, fromLonLat } from 'https://cdn.jsdelivr.net/npm/ol/proj/+esm';
+import { OSM, Vector as VectorSource } from 'https://cdn.jsdelivr.net/npm/ol/source/+esm';
+import { Tile as TileLayer, Vector as VectorLayer } from 'https://cdn.jsdelivr.net/npm/ol/layer/+esm';
+import { Point } from 'https://cdn.jsdelivr.net/npm/ol/geom/+esm';
+import { Style, Icon } from 'https://cdn.jsdelivr.net/npm/ol/style/+esm';
 
 export class TravelMapOverview extends HTMLElement {
   #map = null;

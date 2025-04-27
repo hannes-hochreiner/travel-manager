@@ -32,15 +32,31 @@
       font-optical-sizing: auto;
       font-weight: 400;
       font-style: normal;
-      font-variation-settings:
-        "wdth" 100;
+      font-variation-settings: "width" 100;
     }
   </style>
   <script type="module">
     import { TravelRepo } from "/components/travel-repo.js";
-    // import { default as PouchDb } from "https://esm.run/pouchdb";
 
-    // console.log(new PouchDb("travel"));
+    (async () => {
+      if ("serviceWorker" in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register("/sw.js", {
+            scope: "/",
+          });
+
+          if (registration.installing) {
+            console.log("Service worker installing");
+          } else if (registration.waiting) {
+            console.log("Service worker installed");
+          } else if (registration.active) {
+            console.log("Service worker active");
+          }
+        } catch (error) {
+          console.error(`Registration failed with ${error}`);
+        }
+      }
+    })();
   </script>
   <travel-repo></travel-repo>
 </body>

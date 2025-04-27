@@ -1,5 +1,5 @@
-import { default as PouchDb } from "https://esm.run/pouchdb";
-import { default as PouchDbFind } from "https://esm.run/pouchdb-find";
+import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
+import { default as PouchDbFind } from "https://cdn.jsdelivr.net/npm/pouchdb-find/+esm";
 
 export class Repo {
   #db = null;
