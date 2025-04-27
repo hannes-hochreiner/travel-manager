@@ -3,6 +3,7 @@ import { TripView } from "../components/trip-view.js";
 import { StayView } from "../components/stay-view.js";
 import { StayEdit } from "../components/stay-edit.js";
 import { TravelHeader } from "../components/travel-header.js";
+import { TravelConfirmation } from "../components/travel-confirmation.js";
 
 export class TravelTrip extends HTMLElement {
   #repo = null;
@@ -60,6 +61,7 @@ export class TravelTrip extends HTMLElement {
           </div>
         </travel-header>
         <main>
+          <travel-confirmation></travel-confirmation>
           <div class="breadcrumbs">
             <a href="/">Home</a>
             <span>/</span>
@@ -102,11 +104,24 @@ export class TravelTrip extends HTMLElement {
   }
 
   #deleteStay(stay) {
-    this.#repo.deleteDoc(stay);
-    this.#updateList();
+    let tc = this.shadowRoot.querySelector("travel-confirmation");
+
+    tc.innerHTML = /*html*/ `
+      <div slot="title">Delete ${stay.title}</div>
+      <div slot="message">Are you sure you want to delete ${stay.title}?</div>
+    `;
+    tc.addEventListener("confirmed", () => {
+      tc.show = false;
+      (async () => {
+        await this.#repo.deleteDoc(stay);
+        this.#update();
+      })();
+    })
+    tc.show = true;
   }
 
   #update() {
+    this.#updateList();
     // this.shadowRoot.querySelector("#tripId").innerHTML = this.#tripId;
   }
 

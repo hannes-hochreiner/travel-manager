@@ -3,6 +3,7 @@ import { TravelList } from "../components/travel-list.js";
 import { TravelHeader } from "../components/travel-header.js";
 import { TripView } from "../components/trip-view.js";
 import { TravelLogin } from "../components/travel-login.js";
+import { TravelConfirmation } from "../components/travel-confirmation.js";
 
 export class TravelMain extends HTMLElement {
   #repo = null;
@@ -45,6 +46,7 @@ export class TravelMain extends HTMLElement {
         <main>
           <trip-edit></trip-edit>
           <travel-login></travel-login>
+          <travel-confirmation></travel-confirmation>
           <slot name="list"></slot>
         </main>
       </div>
@@ -120,8 +122,20 @@ export class TravelMain extends HTMLElement {
   }
 
   #deleteTravel(travel) {
-    this.#repo.deleteDoc(travel);
-    this.#update();
+    let tc = this.shadowRoot.querySelector("travel-confirmation");
+
+    tc.innerHTML = /*html*/ `
+      <div slot="title">Delete ${travel.title}</div>
+      <div slot="message">Are you sure you want to delete ${travel.title}?</div>
+    `;
+    tc.addEventListener("confirmed", () => {
+      tc.show = false;
+      (async () => {
+        await this.#repo.deleteDoc(travel);
+        this.#update();
+      })();
+    })
+    tc.show = true;
   }
 
 }

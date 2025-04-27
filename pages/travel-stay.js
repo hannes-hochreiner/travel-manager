@@ -4,6 +4,8 @@ import { LocationEdit } from "../components/location-edit.js";
 import { LocationView } from "../components/location-view.js";
 import { TravelHeader } from "../components/travel-header.js";
 import { TravelMapOverview } from "../components/travel-map-overview.js";
+import { TravelConfirmation } from "../components/travel-confirmation.js";
+
 export class TravelStay extends HTMLElement {
   #repo = null;
   #tripId = null;
@@ -58,6 +60,7 @@ export class TravelStay extends HTMLElement {
           </div>
         </travel-header>
         <main>
+          <travel-confirmation></travel-confirmation>
           <div class="breadcrumbs">
             <a href="/"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg></a>
             <span>/</span>
@@ -105,12 +108,24 @@ export class TravelStay extends HTMLElement {
   }
 
   #deleteLocation(location) {
-    this.#repo.deleteDoc(location);
-    this.#update();
+    let tc = this.shadowRoot.querySelector("travel-confirmation");
+
+    tc.innerHTML = /*html*/ `
+      <div slot="title">Delete ${location.title}</div>
+      <div slot="message">Are you sure you want to delete ${location.title}?</div>
+    `;
+    tc.addEventListener("confirmed", () => {
+      tc.show = false;
+      (async () => {
+        await this.#repo.deleteDoc(location);
+        this.#update();
+      })();
+    })
+    tc.show = true;
   }
 
   #update() {
-    // this.shadowRoot.querySelector("#tripId").innerHTML = this.#tripId;
+    this.#updateList();
   }
 
   #updateList() {
