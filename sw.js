@@ -63,6 +63,8 @@ self.addEventListener('install', (event) => {
     addResourcesToCache([
       './',
       './index.html',
+      './manifest.json',
+      './icon.svg',
       './repo.js',
       './pages/travel-main.js',
       './pages/travel-trip.js',

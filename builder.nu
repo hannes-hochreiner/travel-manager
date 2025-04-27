@@ -19,6 +19,12 @@ def "main build" [
   cp repo.js $var_html
   log info "copying index.html"
   cp index.html $var_html
+  log info "copying manifest.json"
+  cp manifest.json $var_html
+  log info "copying icon.svg"
+  cp icon.svg $var_html
+  log info "copying sw.js"
+  cp sw.js $var_html
   log info "copying components"
   cp -r components $var_html
   chmod -R 755 $var_html
