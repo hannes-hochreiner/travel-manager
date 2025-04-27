@@ -32,6 +32,27 @@ export class TripView extends HTMLElement {
           color: var(--secondary-dark);
         }
 
+        main h1 {
+          margin: .5rem 0;
+          font-size: 1.5rem;
+          font-weight: 900;
+          color: var(--secondary-dark);
+        }
+
+        main h2 {
+          margin: .5rem 0;
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: var(--secondary-dark);
+        }
+
+        main h3 {
+          margin: .5rem 0;
+          font-size: 1.1rem;
+          font-weight: 500;
+          color: var(--secondary-dark);
+        }
+
         header {
           background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
           padding: 0.5rem;

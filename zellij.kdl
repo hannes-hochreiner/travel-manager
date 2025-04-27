@@ -2,7 +2,13 @@ layout {
     pane {
         split_direction "horizontal"
         pane {
-            command "nu"
+            split_direction "vertical"
+            pane {
+                command "nu"
+            }
+            pane {
+                command "nu"
+            }
         }
         pane {
             command "nu"

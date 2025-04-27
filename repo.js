@@ -43,4 +43,8 @@ export class Repo {
       })
     ).docs;
   }
+
+  async sync() {
+    console.log(await this.#db.sync(new PouchDb(`${window.location.origin}/api`)));
+  }
 }
