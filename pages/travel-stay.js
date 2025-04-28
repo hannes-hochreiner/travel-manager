@@ -114,12 +114,10 @@ export class TravelStay extends HTMLElement {
       <div slot="title">Delete ${location.title}</div>
       <div slot="message">Are you sure you want to delete ${location.title}?</div>
     `;
-    tc.addEventListener("confirmed", async () => {
-      tc.show = false;
+    tc.confirm = async () => {
       await this.#repo.deleteDoc(location);
       await this.#update();
-    })
-    tc.show = true;
+    };
   }
 
   async #update() {
@@ -144,7 +142,7 @@ export class TravelStay extends HTMLElement {
   }
 
   #editLocationComplete(obj) {
-    this.#repo.addDoc(obj),then(async () => {
+    this.#repo.addDoc(obj).then(async () => {
       await this.#updateList();
     });
   }

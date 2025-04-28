@@ -110,12 +110,10 @@ export class TravelTrip extends HTMLElement {
       <div slot="title">Delete ${stay.title}</div>
       <div slot="message">Are you sure you want to delete ${stay.title}?</div>
     `;
-    tc.addEventListener("confirmed", async () => {
-      tc.show = false;
-        await this.#repo.deleteDoc(stay);
-        this.#update();
-    });
-    tc.show = true;
+    tc.confirm = async () => {
+      await this.#repo.deleteDoc(stay);
+      await this.#update();
+    };
   }
 
   async #update() {

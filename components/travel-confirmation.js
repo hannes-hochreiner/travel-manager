@@ -68,20 +68,21 @@ export class TravelConfirmation extends HTMLElement {
       </dialog>
     `;
     this.shadowRoot.querySelector("#button_save")
-      .addEventListener("click", () => this.shadowRoot.dispatchEvent(new CustomEvent('confirmed', { 
-        composed: true, 
-        bubbles: true
-    })));
+      .addEventListener("click", () => {
+        this.shadowRoot.querySelector("#dialog").close();
+        this.#cb();
+        this.#cb = null;
+      });
     this.shadowRoot.querySelector("#button_cancel")
-      .addEventListener("click", () => this.shadowRoot.querySelector("#dialog").close());
+      .addEventListener("click", () => {
+        this.shadowRoot.querySelector("#dialog").close()
+        this.#cb = null;
+      });
   }
 
-  set show(show) {
-    if (show) {
-      this.shadowRoot.querySelector("#dialog").showModal();
-    } else {
-      this.shadowRoot.querySelector("#dialog").close();
-    }
+  set confirm(cb) {
+    this.#cb = cb;
+    this.shadowRoot.querySelector("#dialog").showModal();
   }
 }
 

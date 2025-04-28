@@ -68,18 +68,16 @@ export class TravelMain extends HTMLElement {
     // this.shadowRoot.addEventListener("click", (e) => console.log(e.target));
     
     // this.addEventListener("click", (e) => console.log(e.target));
-    this.shadowRoot.querySelector("travel-login").callback = (data) => {
-      (async () => {
-        let url = "/api/_session";
+    this.shadowRoot.querySelector("travel-login").callback = async (data) => {
+      let url = "/api/_session";
 
-        console.log(await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({name: data.username, password: data.password})
-        }));
-      })();
+      console.log(await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({name: data.username, password: data.password})
+      }));
     };
     this.shadowRoot.querySelector("#login").addEventListener("click", () => {
       this.shadowRoot.querySelector("travel-login").show = true;
@@ -96,7 +94,7 @@ export class TravelMain extends HTMLElement {
 
   async #update() {
     if (this.#repo) {
-        this.#travelList.objects = await this.#repo.getAllDocs("travel");
+      this.#travelList.objects = await this.#repo.getAllDocs("travel");
     }
   }
 
@@ -122,12 +120,10 @@ export class TravelMain extends HTMLElement {
       <div slot="title">Delete ${travel.title}</div>
       <div slot="message">Are you sure you want to delete ${travel.title}?</div>
     `;
-    tc.addEventListener("confirmed", async () => {
-      tc.show = false;
+    tc.confirm = async () => {
       await this.#repo.deleteDoc(travel);
       await this.#update();
-    })
-    tc.show = true;
+    };
   }
 }
 
