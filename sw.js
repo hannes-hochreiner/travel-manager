@@ -122,6 +122,15 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  let url = new URL(event.request.url);
+
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+    );
+    return;
+  }
+  
   event.respondWith(
     cacheFirst({
       request: event.request,
