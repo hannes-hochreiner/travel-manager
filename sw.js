@@ -31,7 +31,7 @@ const cacheFirst = async ({ request, preloadResponsePromise }) => {
     putInCache(request, preloadResponse.clone());
   
     return preloadResponse;
-  }
+  } 
 
   // Next try to get the resource from the network
   try {
@@ -126,7 +126,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   let url = new URL(event.request.url);
 
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.startsWith('/api/') || url.origin.startsWith('https://tile.openstreetmap.org')) {
     event.respondWith(
       fetch(event.request)
     );
