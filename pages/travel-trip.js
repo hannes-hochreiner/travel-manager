@@ -32,7 +32,7 @@ export class TravelTrip extends HTMLElement {
         main {
           margin: 1rem;
         }
-        
+
         a {
           text-decoration: none;
           color: var(--secondary-dark);
@@ -102,6 +102,7 @@ export class TravelTrip extends HTMLElement {
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#stayList);
 
     this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     this.#stayList.objects = this.#stays;
     this.shadowRoot.querySelector("travel-map-overview").objects = this.#stays;
 
@@ -132,6 +133,7 @@ export class TravelTrip extends HTMLElement {
 
   async #updateList() {
     this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stays.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     this.#stayList.objects = this.#stays;
     this.shadowRoot.querySelector("travel-map-overview").objects = this.#stays;
     // let blob = await this.shadowRoot.querySelector("travel-map-overview").getBlob();
