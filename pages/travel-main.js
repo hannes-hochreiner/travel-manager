@@ -43,6 +43,9 @@ export class TravelMain extends HTMLElement {
             <button id="sync">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg>
             </button>
+            <button id="update_sw">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+            </button>
           </div>
         </travel-header>
         <main>
@@ -86,7 +89,19 @@ export class TravelMain extends HTMLElement {
     this.shadowRoot.querySelector("#login").addEventListener("click", () => {
       this.shadowRoot.querySelector("travel-login").show = true;
     });
+    this.shadowRoot.querySelector("#update_sw").addEventListener("click", async () => {
+      if ("serviceWorker" in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register("/sw.js", {
+            scope: "/", type: "module",
+          });
 
+          registration.update();
+        } catch (error) {
+          console.error(`Registration failed with ${error}`);
+        }
+      }
+    });
     this.shadowRoot.querySelector("#sync").addEventListener("click", async (e) => {
         try {
           await this.#repo.sync();
