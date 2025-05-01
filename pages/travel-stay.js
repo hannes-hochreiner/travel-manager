@@ -131,6 +131,7 @@ export class TravelStay extends HTMLElement {
 
   async #updateList() {
     this.#locations = await this.#repo.getAllDocs("location", this.#stayId);
+    this.#locations.sort((a, b) => a.title.localeCompare(b.title));
     this.#locationList.objects = this.#locations;
     this.shadowRoot.querySelector("travel-map-overview").objects = this.#locations;
   }
