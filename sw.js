@@ -1,3 +1,5 @@
+import { Repo } from "/repo.js";
+
 const addResourcesToCache = async (resources) => {
   const cache = await caches.open('v1');
   await cache.addAll(resources);
@@ -130,11 +132,21 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
-  
+
   event.respondWith(
     cacheFirst({
       request: event.request,
       preloadResponsePromise: event.preloadResponse
     })
   );
+});
+
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'couchdb-sync') {
+    console.log('periodic sync');
+    event.waitUntil(async () => {
+      const repo = await Repo.create();
+      await repo.sync();
+    });
+  }
 });
