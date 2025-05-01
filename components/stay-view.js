@@ -89,7 +89,7 @@ export class StayView extends HTMLElement {
 
     this.shadowRoot.querySelector("#button_om_link")
       .addEventListener("click", () => {
-        window.open(`om://map?v=1&ll=${object.position[0]},${object.position[1]}&n=${encodeURIComponent(object.title)}`)
+        window.open(`om://map?v=1&ll=${object.position[1]},${object.position[0]}&n=${encodeURIComponent(object.title)}`)
     });
 
     this.update(object);
