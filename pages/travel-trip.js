@@ -11,6 +11,7 @@ export class TravelTrip extends HTMLElement {
   #trip = null;
   #stayEdit = null;
   #stayList = null;
+  #stays = null;
 
   constructor(repo, params) {
     super();
@@ -29,35 +30,31 @@ export class TravelTrip extends HTMLElement {
         }
 
         main {
-          margin: 0 1rem;
+          margin: 1rem;
         }
-
-        .breadcrumbs {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin: 1rem 0;
-        }
-
-        .breadcrumbs a {
-          color: var(--primary-dark);
+        
+        a {
           text-decoration: none;
+          color: var(--secondary-dark);
         }
 
-        .breadcrumbs a:hover {
-          background-color: var(--primary-light);
+        .breadcrumb {
+          background: linear-gradient(45deg, var(--secondary), var(--secondary-light));
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: baseline;
+          padding: 0 1rem; 
+          color: var(--secondary-dark);
         }
-
-        .breadcrumbs span, a {
-          color: var(--primary-dark);
-          border: solid 1px;
-          border-color: var(--primary);
-          border-radius: 1rem;
-          padding: 0.25rem .5rem;
+        .breadcrumb h2 {
+          margin: 0.5rem 0;
         }
-
-        .breadcrumbs span {
-          background-color: var(--primary-light);
+        a .breadcrumb {
+          background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
+        }
+        a:hover .breadcrumb {
+          background: linear-gradient(45deg, var(--secondary), var(--secondary-light));
         }
       </style>
       <div class="content">
@@ -73,12 +70,17 @@ export class TravelTrip extends HTMLElement {
             </button>
           </div>
         </travel-header>
+        <div class="breadcrumb">
+          <h2>${this.#trip.title}</h2>
+          <div class="actions">
+            <button id="om_link">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
+            </button>
+          </div>
+        </div>
         <main>
           <travel-confirmation></travel-confirmation>
-          <div class="breadcrumbs">
-            <a href="/"><svg xmlns="http://www.w3.org/2000/svg" height=".8rem" viewBox="0 -960 960 960" width=".8rem" fill="#1f1f1f"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg> Overview</a>
-            <span><svg xmlns="http://www.w3.org/2000/svg" height=".8rem" viewBox="0 -960 960 960" width=".8rem" fill="#1f1f1f"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q146 0 255.5 91.5T872-559h-82q-19-73-68.5-130.5T600-776v16q0 33-23.5 56.5T520-680h-80v80q0 17-11.5 28.5T400-560h-80v80h80v120h-40L168-552q-3 18-5.5 36t-2.5 36q0 131 92 225t228 95v80Zm364-20L716-228q-21 12-45 20t-51 8q-75 0-127.5-52.5T440-380q0-75 52.5-127.5T620-560q75 0 127.5 52.5T800-380q0 27-8 51t-20 45l128 128-56 56ZM620-280q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Z"/></svg> ${this.#trip.title}</span>
-          </div>
           <travel-map-overview></travel-map-overview>
           <slot name="stay-edit"></slot>
           <slot name="list"></slot>
@@ -99,9 +101,13 @@ export class TravelTrip extends HTMLElement {
     this.appendChild(this.#stayList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#stayList);
 
-    let stays = await this.#repo.getAllDocs("stay", this.#tripId);
-    this.#stayList.objects = stays;
-    this.shadowRoot.querySelector("travel-map-overview").objects = stays;
+    this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stayList.objects = this.#stays;
+    this.shadowRoot.querySelector("travel-map-overview").objects = this.#stays;
+
+    this.shadowRoot.querySelector("#om_link").addEventListener("click", () => {
+      window.open(`om://map?v=1&${this.#stays.map((stay) => `ll=${stay.position[1]},${stay.position[0]}&n=${encodeURIComponent(stay.title)}`).join("&")}`)
+    });
 
     await this.#update();
   }
@@ -125,9 +131,9 @@ export class TravelTrip extends HTMLElement {
   }
 
   async #updateList() {
-    let stays = await this.#repo.getAllDocs("stay", this.#tripId);
-    this.#stayList.objects = stays;
-    this.shadowRoot.querySelector("travel-map-overview").objects = stays;
+    this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
+    this.#stayList.objects = this.#stays;
+    this.shadowRoot.querySelector("travel-map-overview").objects = this.#stays;
     // let blob = await this.shadowRoot.querySelector("travel-map-overview").getBlob();
     // console.log(blob);
   }
