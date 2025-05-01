@@ -56,6 +56,13 @@ export class TravelMapOverview extends HTMLElement {
       }),
       target: this.shadowRoot.querySelector("#map")
     });
+
+    this.shadowRoot.querySelector("#map").addEventListener("mouseover", (e) => {
+      this.#map.getOverlays().forEach(overlay => overlay.getElement().style.display = "none");
+    });
+    this.shadowRoot.querySelector("#map").addEventListener("mouseout", (e) => {
+      this.#map.getOverlays().forEach(overlay => overlay.getElement().style.display = "block");
+    });
   }
 
   set objects(objects) {
