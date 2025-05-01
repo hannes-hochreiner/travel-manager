@@ -108,6 +108,7 @@ self.addEventListener('install', (event) => {
       './manifest.json',
       './icon.svg',
       './repo.js',
+      './worker.js',
       './pages/travel-main.js',
       './pages/travel-trip.js',
       './pages/travel-stay.js',
@@ -179,14 +180,4 @@ self.addEventListener('fetch', (event) => {
       preloadResponsePromise: event.preloadResponse
     })
   );
-});
-
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'couchdb-sync') {
-    console.log('periodic sync');
-    event.waitUntil(async () => {
-      const repo = await Repo.create();
-      await repo.sync();
-    });
-  }
 });
