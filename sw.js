@@ -49,6 +49,45 @@ const cacheFirst = async ({ request, preloadResponsePromise }) => {
   }
 };
 
+const networkFirst = async ({ request, preloadResponsePromise }) => {
+  // Try to use the preloaded response, if it's there
+  // NOTE: Chrome throws errors regarding preloadResponse, see:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1420515
+  // https://github.com/mdn/dom-examples/issues/145
+  // To avoid those errors, remove or comment out this block of preloadResponse
+  // code along with enableNavigationPreload() and the "activate" listener.
+  const preloadResponse = await preloadResponsePromise;
+  
+  if (preloadResponse) {
+    console.info('using preload response', preloadResponse);
+    putInCache(request, preloadResponse.clone());
+  
+    return preloadResponse;
+  } 
+
+  // Next try to get the resource from the network
+  try {
+    const responseFromNetwork = await fetch(request.clone());
+    // response may be used only once
+    // we need to save clone to put one copy in cache
+    // and serve second one
+    putInCache(request, responseFromNetwork.clone());
+    return responseFromNetwork;
+  } catch (error) {
+    // Try to get the resource from the cache
+    const responseFromCache = await caches.match(request);
+  
+    if (responseFromCache) {
+      return responseFromCache;
+    }
+  
+    return new Response('Network error happened', {
+      status: 408,
+      headers: { 'Content-Type': 'text/plain' },
+    });
+  }
+};
+
 const enableNavigationPreload = async () => {
   if (self.registration.navigationPreload) {
     // Enable navigation preloads!
@@ -135,7 +174,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    cacheFirst({
+    networkFirst({
       request: event.request,
       preloadResponsePromise: event.preloadResponse
     })
