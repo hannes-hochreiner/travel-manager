@@ -101,11 +101,6 @@ export class TravelStay extends HTMLElement {
     });
     this.appendChild(this.#locationList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#locationList);
-
-    let locations = await this.#repo.getAllDocs("location", this.#stayId);
-    this.#locationList.objects = locations;
-    this.shadowRoot.querySelector("travel-map-overview").objects = locations;
-
     await this.#update();
   }
 
