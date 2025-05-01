@@ -29,11 +29,11 @@ export class StayView extends HTMLElement {
         h2 {
           margin: 0;
           font-weight: 700;
-          color: var(--secondary-light);
+          color: var(--secondary-dark);
         }
 
         header {
-          background: linear-gradient(45deg, var(--secondary-dark), var(--secondary));
+          background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
           padding: 0.5rem;
         }
 
