@@ -61,6 +61,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('install', (event) => {
+  caches.delete('v1');
   event.waitUntil(
     addResourcesToCache([
       './',
