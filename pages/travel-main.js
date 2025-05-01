@@ -4,14 +4,17 @@ import { TravelHeader } from "../components/travel-header.js";
 import { TripView } from "../components/trip-view.js";
 import { TravelLogin } from "../components/travel-login.js";
 import { TravelConfirmation } from "../components/travel-confirmation.js";
+import { TravelNotification } from "../components/travel-notification.js";
 
 export class TravelMain extends HTMLElement {
   #repo = null;
   #travelList = null;
+  #bc = null
 
   constructor(repo) {
     super();
     this.#repo = repo;
+    this.#bc = new BroadcastChannel("notification");
   }
 
   async connectedCallback() {
@@ -47,6 +50,7 @@ export class TravelMain extends HTMLElement {
           <travel-login></travel-login>
           <travel-confirmation></travel-confirmation>
           <slot name="list"></slot>
+          <travel-notification></travel-notification>
         </main>
       </div>
     `;
@@ -84,11 +88,15 @@ export class TravelMain extends HTMLElement {
     });
 
     this.shadowRoot.querySelector("#sync").addEventListener("click", async (e) => {
-        await this.#repo.sync();
-        console.log("triggering update");
+        try {
+          await this.#repo.sync();
+          this.#bc.postMessage({title: "Sync", message: "Synchronization successful", type: "info"});
+        } catch (err) {
+          console.log(err);
+          this.#bc.postMessage({title: "Sync Error", message: err.message, type: "error"});
+        }
         await this.#update();
     });
-    console.log("triggering update");
     await this.#update();
   }
 
