@@ -25,6 +25,8 @@ def "main build" [
   cp icon.svg $var_html
   log info "copying sw.js"
   cp sw.js $var_html
+  log info "copying worker.js"
+  cp worker.js $var_html
   log info "copying components"
   cp -r components $var_html
   chmod -R 755 $var_html
