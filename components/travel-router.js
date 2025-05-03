@@ -1,11 +1,17 @@
 import { TravelMain } from "../pages/travel-main.js";
 import { TravelTrip } from "../pages/travel-trip.js";
 import { TravelStay } from "../pages/travel-stay.js";
+import { TravelConfig } from "../pages/travel-config.js";
 
 export class TravelRouter extends HTMLElement {
   #repo = null;
   #slotContent = null;
   #routes = [
+    {
+      route:
+        /^\/config$/,
+      class: TravelConfig,
+    },
     {
       route:
         /^\/trip\/(?<tripId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/stay\/(?<stayId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/,

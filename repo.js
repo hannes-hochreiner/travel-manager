@@ -3,12 +3,14 @@ import { default as PouchDbFind } from "https://cdn.jsdelivr.net/npm/pouchdb-fin
 
 export class Repo {
   #db = null;
+  #dbLocal = null;
 
   static async create() {
     let repo = new Repo();
     
     PouchDb.plugin(PouchDbFind);
     repo.#db = new PouchDb("travel");
+    repo.#dbLocal = new PouchDb("travel_local");
 
     try {
       await repo.#db.createIndex({
@@ -46,5 +48,21 @@ export class Repo {
 
   async sync() {
     console.log(await this.#db.sync(new PouchDb(`${window.location.origin}/api`)));
+  }
+
+  async getConfig() {
+    return await this.#dbLocal.get("config");
+  }
+
+  async setConfig(config) {
+    await this.#dbLocal.put(config);
+  }
+
+  async getInfo() {
+    return await this.#dbLocal.get("info");
+  }
+
+  async setInfo(info) {
+    await this.#dbLocal.put(info);
   }
 }

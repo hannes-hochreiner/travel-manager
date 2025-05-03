@@ -1,5 +1,6 @@
 export class TravelLogin extends HTMLElement {
-  #cb = null;
+  #resolve = null;
+  #reject = null;
 
   constructor() {
     super();
@@ -60,44 +61,63 @@ export class TravelLogin extends HTMLElement {
             <input id="password" type="password" />
           </main>
           <footer>
-            <button id="button_save" class="action">
+            <button onclick="this.getRootNode().host.loginOk()" class="action">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
             </button>
-            <button id="button_cancel" class="action">
+            <button onclick="this.getRootNode().host.loginCancel()" class="action">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
             </button>
           </footer>
         </div>
       </dialog>
     `;
-    this.shadowRoot.querySelector("#button_save")
-      .addEventListener("click", () => this.#login_ok());
-    this.shadowRoot.querySelector("#button_cancel")
-      .addEventListener("click", () => this.#login_cancel());
+    // this.shadowRoot.querySelector("#button_save")
+    //   .addEventListener("click", () => this.#login_ok());
+    // this.shadowRoot.querySelector("#button_cancel")
+    //   .addEventListener("click", () => this.#login_cancel());
   }
 
-  set show(show) {
-    if (show) {
+  // set show(show) {
+  //   if (show) {
+  //     this.shadowRoot.querySelector("#dialog").showModal();
+  //   } else {
+  //     this.shadowRoot.querySelector("#dialog").close();
+  //   }
+  // }
+
+  // set callback(cb) {
+  //   this.#cb = cb;
+  // }
+
+  async getLoginData() {
+    return new Promise((resolve, reject) => {
+      this.#resolve = resolve;
+      this.#reject = reject;
+      this.shadowRoot.querySelector("#username").value = "";
+      this.shadowRoot.querySelector("#password").value = "";
       this.shadowRoot.querySelector("#dialog").showModal();
-    } else {
-      this.shadowRoot.querySelector("#dialog").close();
-    }
+    })
   }
 
-  set callback(cb) {
-    this.#cb = cb;
-  }
-
-  #login_ok() {
+  loginOk() {
     this.shadowRoot.querySelector("#dialog").close();
-    this.#cb({
+    this.#resolve({
       username: this.shadowRoot.querySelector("#username").value,
       password: this.shadowRoot.querySelector("#password").value,
     });
+    this.#resolve = null;
+    this.#reject = null;
+    this.shadowRoot.querySelector("#username").value = "";
+    this.shadowRoot.querySelector("#password").value = "";
   }
 
-  #login_cancel() {
+  loginCancel() {
     this.shadowRoot.querySelector("#dialog").close();
+    this.#resolve();
+    this.#resolve = null;
+    this.#reject = null;
+    this.shadowRoot.querySelector("#username").value = "";
+    this.shadowRoot.querySelector("#password").value = "";
   }
 }
 

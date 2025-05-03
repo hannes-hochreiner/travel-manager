@@ -37,15 +37,9 @@ export class TravelMain extends HTMLElement {
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q146 0 255.5 91.5T872-559h-82q-19-73-68.5-130.5T600-776v16q0 33-23.5 56.5T520-680h-80v80q0 17-11.5 28.5T400-560h-80v80h80v120h-40L168-552q-3 18-5.5 36t-2.5 36q0 131 92 225t228 95v80Zm364-20L716-228q-21 12-45 20t-51 8q-75 0-127.5-52.5T440-380q0-75 52.5-127.5T620-560q75 0 127.5 52.5T800-380q0 27-8 51t-20 45l128 128-56 56ZM620-280q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Z"/></svg>
             </button>
-            <button id="login">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z"/></svg>
-            </button>
-            <button id="sync">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg>
-            </button>
-            <button id="update_sw">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
-            </button>
+            <a href="/config"><button>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+            </button></a>
           </div>
         </travel-header>
         <main>
@@ -57,7 +51,7 @@ export class TravelMain extends HTMLElement {
         </main>
       </div>
     `;
-    // this.#repo = repo;
+
     this.shadowRoot.querySelector("#add_travel").addEventListener("click", () => this.#addTravel());
     this.#travelList = new TravelList({
       "travel": {
@@ -68,50 +62,6 @@ export class TravelMain extends HTMLElement {
     });
     this.appendChild(this.#travelList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#travelList);
-    // this.#travelEdit = new TravelEdit();
-    // this.appendChild(this.#travelEdit);
-    // this.shadowRoot.querySelector("slot[name=edit]").assign(this.#travelEdit);
-    
-    // this.shadowRoot.addEventListener("click", (e) => console.log(e.target));
-    
-    // this.addEventListener("click", (e) => console.log(e.target));
-    this.shadowRoot.querySelector("travel-login").callback = async (data) => {
-      let url = "/api/_session";
-
-      console.log(await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({name: data.username, password: data.password})
-      }));
-    };
-    this.shadowRoot.querySelector("#login").addEventListener("click", () => {
-      this.shadowRoot.querySelector("travel-login").show = true;
-    });
-    this.shadowRoot.querySelector("#update_sw").addEventListener("click", async () => {
-      if ("serviceWorker" in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.register("/sw.js", {
-            scope: "/", type: "module",
-          });
-
-          registration.update();
-        } catch (error) {
-          console.error(`Registration failed with ${error}`);
-        }
-      }
-    });
-    this.shadowRoot.querySelector("#sync").addEventListener("click", async (e) => {
-        try {
-          await this.#repo.sync();
-          this.#bc.postMessage({title: "Sync", message: "Synchronization successful", type: "info"});
-        } catch (err) {
-          console.log(err);
-          this.#bc.postMessage({title: "Sync Error", message: err.message, type: "error"});
-        }
-        await this.#update();
-    });
     await this.#update();
   }
 
