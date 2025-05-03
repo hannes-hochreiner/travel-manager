@@ -25,7 +25,7 @@ export class TravelList extends HTMLElement {
         :host {
           display: grid;
           gap: 1rem;
-          grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
           margin-top: 1rem;
         }
       </style>
