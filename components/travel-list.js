@@ -8,21 +8,32 @@ export class TravelList extends HTMLElement {
 
     const shadowRoot = this.attachShadow({ mode: "open" });
 
-    shadowRoot.innerHTML = /*html*/ `
+    shadowRoot.innerHTML = this.#style();
+
+    this.#types = types;
+  }
+
+  #style() {
+    return /*html*/ `
       <style>
         p {
           color: white;
           background-color: #666;
           padding: 5px;
         }
+
+        :host {
+          display: grid;
+          gap: 1rem;
+          grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+          margin-top: 1rem;
+        }
       </style>
     `;
-
-    this.#types = types;
   }
 
   set objects(objects) {
-    this.shadowRoot.innerHTML = "";
+    this.shadowRoot.innerHTML = this.#style();
 
     objects.forEach((object) => {
       let config = this.#types[object.type];

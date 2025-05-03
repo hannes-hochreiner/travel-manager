@@ -8,7 +8,6 @@ export class LocationView extends HTMLElement {
           div.content {
             display: flex;
             flex-direction: column;
-            margin: 0.5rem 0;
             border: 1px solid;
           }
   
