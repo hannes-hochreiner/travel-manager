@@ -1,10 +1,7 @@
-// import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
 import { Repo } from "./repo.js";
 
 let cancelToken = null;
 const bc = new BroadcastChannel("notification");
-// let db = new PouchDb("travel");
-// let dbLocal = new PouchDb("travel_local");
 
 onmessage = async (e) => {
   if (e.data.type === "init") {
@@ -30,7 +27,7 @@ onmessage = async (e) => {
       } catch (err) {
         console.log(err);
       }
-    }, 1000 * 60 * 1);
+    }, 1000 * 60 * 5);
   } else if (e.data.type === "stop") {
     if (cancelToken) {
       clearInterval(cancelToken);
