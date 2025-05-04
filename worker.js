@@ -1,32 +1,36 @@
-import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
+// import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
+import { Repo } from "./repo.js";
 
 let cancelToken = null;
-let db = new PouchDb("travel");
-let dbLocal = new PouchDb("travel_local");
+const bc = new BroadcastChannel("notification");
+// let db = new PouchDb("travel");
+// let dbLocal = new PouchDb("travel_local");
 
 onmessage = async (e) => {
   if (e.data.type === "init") {
+    let repo = await Repo.create();
+
     cancelToken = setInterval(async () => {
       try {
-        let config = await dbLocal.get("config");
+        let config = await repo.getConfig();
 
         if (config.offline) {
           return;
         }
 
-        await db.sync(new PouchDb(`${self.location.origin}/api`));
+        await repo.sync();
 
-        let info = await dbLocal.get("info");
+        let info = await repo.getInfo();
         info.lastSync = new Date();
-        await dbLocal.put(info);
+        await repo.setInfo(info);
 
         if (config.notifyOnAutoSync) {
-          self.postMessage({title: "Sync", message: "Synchronization successful", type: "info"});
+          bc.postMessage({title: "Sync", message: "Synchronization successful", type: "info"});
         }
       } catch (err) {
         console.log(err);
       }
-    }, 1000 * 60 * 5);
+    }, 1000 * 60 * 1);
   } else if (e.data.type === "stop") {
     if (cancelToken) {
       clearInterval(cancelToken);

@@ -58,7 +58,15 @@ export class Repo {
   }
 
   async sync() {
-    console.log(await this.#db.sync(new PouchDb(`${window.location.origin}/api`)));
+    let origin = "";
+
+    if (typeof(window) === "undefined") {
+      origin = self.location.origin;
+    } else {
+      origin = window.location.origin;
+    }
+
+    console.log(await this.#db.sync(new PouchDb(`${origin}/api`)));
   }
 
   async getConfig() {
