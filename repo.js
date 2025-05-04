@@ -39,11 +39,22 @@ export class Repo {
   }
 
   async getAllDocs(type, parent) {
-    return (
-      await this.#db.find({
+    const limit = 50;
+    let lastCount = limit;
+    const results = [];
+
+    while (lastCount === limit) {
+      let batch = (await this.#db.find({
         selector: { type: type, parent: parent },
-      })
-    ).docs;
+        limit: limit,
+        skip: results.length,
+      })).docs;
+      lastCount = batch.length;
+
+      results.push(...batch);
+    }
+
+    return results;
   }
 
   async sync() {
