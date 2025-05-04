@@ -49,21 +49,26 @@ const cacheFirst = async ({ request, preloadResponsePromise }) => {
   }
 };
 
-const networkFirst = async ({ request, preloadResponsePromise }) => {
+const networkFirst = async (request) => {
   // Try to use the preloaded response, if it's there
   // NOTE: Chrome throws errors regarding preloadResponse, see:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1420515
   // https://github.com/mdn/dom-examples/issues/145
   // To avoid those errors, remove or comment out this block of preloadResponse
   // code along with enableNavigationPreload() and the "activate" listener.
-  const preloadResponse = await preloadResponsePromise;
-  
-  if (preloadResponse) {
-    console.info('using preload response', preloadResponse);
-    putInCache(request, preloadResponse.clone());
-  
-    return preloadResponse;
-  } 
+  // try {
+  //   const preloadResponse = await preloadResponsePromise;
+    
+  //   if (preloadResponse) {
+  //     console.info('using preload response', preloadResponse);
+  //     putInCache(request, preloadResponse.clone());
+    
+  //     return preloadResponse;
+  //   } 
+  // } catch (error) {
+  //   console.error("Prefetch error:", error);
+  //   console.log("Trying to get resource from network");
+  // }
 
   // Next try to get the resource from the network
   try {
@@ -88,12 +93,12 @@ const networkFirst = async ({ request, preloadResponsePromise }) => {
   }
 };
 
-const enableNavigationPreload = async () => {
-  if (self.registration.navigationPreload) {
-    // Enable navigation preloads!
-    await self.registration.navigationPreload.enable();
-  }
-};
+// const enableNavigationPreload = async () => {
+//   if (self.registration.navigationPreload) {
+//     // Enable navigation preloads!
+//     await self.registration.navigationPreload.enable();
+//   }
+// };
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(enableNavigationPreload());
@@ -109,6 +114,7 @@ self.addEventListener('install', (event) => {
       './icon.svg',
       './repo.js',
       './worker.js',
+      './pages/travel-config.js',
       './pages/travel-main.js',
       './pages/travel-trip.js',
       './pages/travel-stay.js',
@@ -121,6 +127,7 @@ self.addEventListener('install', (event) => {
       './components/travel-list.js',
       './components/travel-login.js',
       './components/travel-map-overview.js',
+      './components/travel-notification.js',
       './components/travel-position-edit.js',
       './components/travel-repo.js',
       './components/travel-router.js',
@@ -175,9 +182,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    networkFirst({
-      request: event.request,
-      preloadResponsePromise: event.preloadResponse
-    })
+    networkFirst(
+      event.request,
+    )
   );
 });
