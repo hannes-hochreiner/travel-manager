@@ -40,7 +40,7 @@
         zellij
         nodejs_23
         nushell
-        tera
+        tera-cli
       ];
     };
 
