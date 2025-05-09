@@ -23,8 +23,10 @@ def "main build" [
   cp manifest.json $var_html
   log info "copying icon.svg"
   cp icon.svg $var_html
-  log info "copying sw.js"
-  cp sw.js $var_html
+  log info "creating service worker"
+  create_service_worker $src $var_html
+  # log info "copying sw.js"
+  # cp sw.js $var_html
   log info "copying worker.js"
   cp worker.js $var_html
   log info "copying components"
@@ -45,4 +47,25 @@ def --env augment_path [] {
     ...$env.PATH
     ...($env.buildInputs | split row -r '\s+' | each {|item| $"($item)/bin"})
   ]
+}
+
+def create_service_worker [
+  source_path: string
+  output_path: string
+] {
+  {
+    version: (random uuid),
+    project_artifacts: [
+      './',
+      './index.html',
+      './manifest.json',
+      './icon.svg',
+      './repo.js',
+      './worker.js',
+      ...(ls -la $"($source_path)/pages" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
+      ...(ls -la $"($source_path)/components" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
+      ...(ls -la $"($source_path)/data" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
+    ]
+  } | to json | tera -t $"($source_path)/sw.js.tera" -s | save $"($output_path)/sw.js"
+  # } | to json | save $"($output_path)/sw.js"
 }

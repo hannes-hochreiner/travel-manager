@@ -1,32 +1,8 @@
-const version = 'v3';
+const version = '{{ version }}';
 const projectArtifacts = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.svg',
-  './repo.js',
-  './worker.js',
-  './pages/travel-config.js',
-  './pages/travel-main.js',
-  './pages/travel-trip.js',
-  './pages/travel-stay.js',
-  './components/location-edit.js',
-  './components/location-view.js',
-  './components/stay-edit.js',
-  './components/stay-view.js',
-  './components/travel-confirmation.js',
-  './components/travel-header.js',
-  './components/travel-list.js',
-  './components/travel-login.js',
-  './components/travel-map-overview.js',
-  './components/travel-notification.js',
-  './components/travel-position-edit.js',
-  './components/travel-repo.js',
-  './components/travel-router.js',
-  './components/trip-edit.js',
-  './components/trip-view.js',
-  './data/map-location.svg',
-  './data/map-pin.svg',
+  {% for url in project_artifacts -%}
+    '{{url}}',
+  {% endfor -%}
 ];
 const externalLibraries = [
   'https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap',

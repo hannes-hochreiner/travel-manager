@@ -19,6 +19,7 @@
         # gcc_multi
         # rust-bin-custom
         uutils-coreutils-noprefix
+        tera-cli
       ];
       args = [ ./builder.nu "build" ./. ];
     };
