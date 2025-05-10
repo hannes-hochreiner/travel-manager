@@ -163,6 +163,7 @@ export class TravelPositionEdit extends HTMLElement {
     this.#position[1] = parseFloat(this.shadowRoot.querySelector("#latitude").value);
 
     this.#icon.setGeometry(new Point(fromLonLat(this.#position)));
+    this.#map.getView().setCenter(fromLonLat(this.#position));
   }
 
   #geoUriChanged() {
