@@ -35,6 +35,9 @@ def "main build" [
   log info "copying pages"
   cp -r pages $var_html
   chmod -R 755 $var_html
+  log info "copying objects"
+  cp -r objects $var_html
+  chmod -R 755 $var_html
   
   log info "build complete"
 }
@@ -61,6 +64,7 @@ def create_service_worker [
       './worker.js',
       ...(ls -la $"($source_path)/pages" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
       ...(ls -la $"($source_path)/components" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
+      ...(ls -la $"($source_path)/objects" | get name | each {|x| $"./($x | path relative-to $source_path)"}),
     ]
   } | to json | tera -t $"($source_path)/sw.js.tera" -s | save $"($output_path)/sw.js"
 }

@@ -1,4 +1,5 @@
 import { TravelPositionEdit } from "./travel-position-edit.js";
+import { Location } from "../objects/location.js";
 
 export class LocationEdit extends HTMLElement {
   #object = null;
@@ -11,7 +12,12 @@ export class LocationEdit extends HTMLElement {
     this.#id = crypto.randomUUID();
     
     const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.innerHTML = /*html*/ `
+  }
+
+  #render() {
+    const subtypes = Location.meta.properties.subtype.options;
+
+    return /*html*/ `
       <style>
         dialog {
           padding: 0;
@@ -77,77 +83,73 @@ export class LocationEdit extends HTMLElement {
       <dialog id="dialog">
         <div class="content">
           <header>
-            <input id="title" />
+            <input id="title"/>
           </header>
           <main>
+            <label for="subtype">Type</label>
+            <select id="subtype">
+              <option value="">&lt;none&gt;</option>
+              ${Object.keys(subtypes).map((key) => `<option value="${key}" ${this.#object.subtype === key ? "selected" : ""}>${subtypes[key].name}</option>`).join("")}
+            </select>
+            <label for="description">Description</label>
             <textarea id="description"></textarea>
-            <travel-position-edit id="position"></travel-position-edit>
+            <travel-position-edit id="position" value="${JSON.stringify(this.#object.position)}"></travel-position-edit>
           </main>
           <footer>
-            <button id="button_save" class="action">
+            <button id="button_save" class="action" onclick="this.getRootNode().host.editOk(event)">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
             </button>
-            <button id="button_cancel" class="action">
+            <button id="button_cancel" class="action" onclick="this.getRootNode().host.editCancel(event)">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
             </button>
           </footer>
         </div>
       </dialog>
     `;
-    this.shadowRoot.querySelector("#button_save")
-      .addEventListener("click", () => this.#edit_ok());
-    this.shadowRoot.querySelector("#button_cancel")
-      .addEventListener("click", () => this.#edit_cancel());
-  }
-
-  set show(show) {
-    if (show) {
-      this.shadowRoot.querySelector("#dialog").showModal();
-    } else {
-      this.shadowRoot.querySelector("#dialog").close();
-    }
-  }
-
-  set object(object) {
-    this.#object = object;
-    this.#object_to_elements();
   }
 
   edit_object(obj, cb) {
     this.#object = obj;
     this.#cb = cb;
+    this.shadowRoot.innerHTML = this.#render();
     this.#object_to_elements();
     this.shadowRoot.querySelector("#dialog").showModal();
   }
 
-  #edit_ok() {
+  editOk() {
     this.shadowRoot.querySelector("#dialog").close();
     this.#elements_to_object();
     this.#cb(this.#object);
   }
 
-  #edit_cancel() {
+  editCancel() {
     this.shadowRoot.querySelector("#dialog").close();
   }
 
   #object_to_elements() {
-    Object.keys(this.#object).forEach((key) => {
-      let element = this.shadowRoot.querySelector("#" + key);
+    Object.keys(Location.meta.properties).forEach((key) => {
+      if (["string", "markdown", "position"].includes(Location.meta.properties[key].type)) {
+        let element = this.shadowRoot.querySelector("#" + key);
 
-      if (element) {
-        element.value = this.#object[key];
+        if (element && this.#object.hasOwnProperty(key)) {
+          element.value = this.#object[key];
+        }
       }
     });
   }
 
   #elements_to_object() {
-    Object.keys(this.#object).forEach((key) => {
-      let element = this.shadowRoot.querySelector("#" + key);
-
-      if (element) {
-        this.#object[key] = element.value;
+    Object.keys(Location.meta.properties).forEach((key) => {
+      if (["string", "markdown", "position"].includes(Location.meta.properties[key].type)) {
+        let element = this.shadowRoot.querySelector("#" + key);
+  
+        if (element) {
+          this.#object[key] = element.value;
+        }
       }
     });
+
+    this.#object.subtype = this.shadowRoot.querySelector("#subtype").value;
   }
 }
 
