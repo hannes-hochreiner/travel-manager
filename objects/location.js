@@ -8,6 +8,8 @@ export class Location {
         "accommodation": { name: "Accommodation" },
         "sight": { name: "Sight" },
         "museum": { name: "Museum" },
+        "nature": { name: "Nature" },
+        "temple": { name: "Temple" },
       }},
     },
   }
