@@ -41,11 +41,21 @@ export class TravelPositionEdit extends HTMLElement {
         .tab-content.active {
           display: block;
         }
+        .tab-content[data-tab="numerical"].active {
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+          align-items: center;
+          justify-content: space-between;
+        }
         .form-group {
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
           margin-bottom: 1rem;
+          width: 100px;
+          flex-grow: 4;
         }
         label {
           font-weight: bold;
@@ -70,14 +80,16 @@ export class TravelPositionEdit extends HTMLElement {
             <label for="longitude">Longitude</label>
             <input id="longitude" type="number" step="0.000001" />
           </div>
+          <button onclick="this.getRootNode().host.swapLongLat()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/></svg>
+          </button>
           <div class="form-group">
             <label for="latitude">Latitude</label>
             <input id="latitude" type="number" step="0.000001" />
           </div>
-          <div class="form-group">
-            <label for="geoUri">Geo URI</label>
-            <input id="geoUri" type="text" />
-          </div>
+          <button onclick="this.getRootNode().host.getGeoUrl()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="m720-120-56-57 63-63H480v-80h247l-63-64 56-56 160 160-160 160Zm120-400h-80v-240h-80v120H280v-120h-80v560h200v80H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v240ZM480-760q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z"/></svg>
+          </button>
         </div>
         
         <div class="tab-content" data-tab="map">
@@ -90,13 +102,11 @@ export class TravelPositionEdit extends HTMLElement {
     
     let longitude = this.shadowRoot.querySelector("#longitude");
     let latitude = this.shadowRoot.querySelector("#latitude");
-    let geoUri = this.shadowRoot.querySelector("#geoUri");
 
     longitude.onchange = this.#longLatChanged.bind(this);
     longitude.value = this.#position[0];
     latitude.onchange = this.#longLatChanged.bind(this);
     latitude.value = this.#position[1];
-    geoUri.onchange = this.#geoUriChanged.bind(this);
 
     this.#icon = new Feature({
       geometry: new Point(fromLonLat(this.#position)),
@@ -166,20 +176,26 @@ export class TravelPositionEdit extends HTMLElement {
     this.#map.getView().setCenter(fromLonLat(this.#position));
   }
 
-  #geoUriChanged() {
-    let geoUriElement = this.shadowRoot.querySelector("#geoUri");
+  swapLongLat() {
+    this.value = [this.#position[1], this.#position[0]];
+  }
 
-    if (geoUriElement.value.startsWith("geo:")) {
-      let parts = geoUriElement.value.split(":")[1].split(",");
+  async getGeoUrl() {
+    let text = (await navigator.clipboard.readText()).trim();
+
+    if (text.startsWith("geo:")) {
+      let parts = text.split(":")[1].split(",");
+      this.value = [parseFloat(parts[1]), parseFloat(parts[0])];
+    } else {
+      let parts = text.split(",");
       this.value = [parseFloat(parts[1]), parseFloat(parts[0])];
     }
-
-    geoUriElement.value = "";
   }
 
   set value(value) {
     this.#position = value;
     this.#icon.setGeometry(new Point(fromLonLat(this.#position)));
+    this.#map.getView().setCenter(fromLonLat(this.#position));
     this.shadowRoot.querySelector("#longitude").value = this.#position[0];
     this.shadowRoot.querySelector("#latitude").value = this.#position[1];
   }
