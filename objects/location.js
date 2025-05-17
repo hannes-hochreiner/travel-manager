@@ -10,6 +10,8 @@ export class Location {
         "museum": { name: "Museum" },
         "nature": { name: "Nature" },
         "temple": { name: "Temple" },
+        "transport": { name: "Transport" },
+        "information": { name: "Information" },
       }},
     },
   }
