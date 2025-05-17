@@ -5,6 +5,7 @@ import { LocationView } from "../components/location-view.js";
 import { TravelHeader } from "../components/travel-header.js";
 import { TravelMapOverview } from "../components/travel-map-overview.js";
 import { TravelConfirmation } from "../components/travel-confirmation.js";
+import { TravelDirectionLinks } from "../components/travel-direction-links.js";
 
 export class TravelStay extends HTMLElement {
   #repo = null;
@@ -82,9 +83,13 @@ export class TravelStay extends HTMLElement {
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
             </button>
+            <button onclick="this.getRootNode().host.generateLinks()">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M480-40q-91 0-171.5-34.5t-140-94q-59.5-59.5-94-140T40-480q0-92 34.5-172t94-139.5q59.5-59.5 140-94T480-920q92 0 172 34.5t139.5 94Q851-732 885.5-652T920-480q0 91-34.5 171.5t-94 140Q732-109 652-74.5T480-40Zm-25-129q10 10 23 10t23-10l288-288q10-10 10-24t-10-24L501-793q-10-10-23-10t-23 10L167-505q-10 10-10 24t10 24l288 288ZM319-361v-160q0-18 11-29t29-11h166l-42-44 56-56 140 140-140 140-56-56 42-44H399v120h-80Z"/></svg>
+            </button>
           </div>
         </div>
         <main>
+          <travel-direction-links></travel-direction-links>
           <travel-confirmation></travel-confirmation>
           <slot name="location-edit"></slot>
           <travel-map-overview></travel-map-overview>
@@ -151,6 +156,10 @@ export class TravelStay extends HTMLElement {
     this.#repo.addDoc(obj).then(async () => {
       await this.#updateList();
     });
+  }
+
+  generateLinks() {
+    this.shadowRoot.querySelector("travel-direction-links").locations = this.#locations;
   }
 }
 
