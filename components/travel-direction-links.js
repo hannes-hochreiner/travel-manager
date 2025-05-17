@@ -1,4 +1,6 @@
 export class TravelDirectionLinks extends HTMLElement {
+  #locations = [];
+
   constructor() {
     super();
 
@@ -61,7 +63,7 @@ export class TravelDirectionLinks extends HTMLElement {
         <div class="content">
           <header>
             Direction Links
-            <div onclick="this.getRootNode().querySelector('#dialog').close()">
+            <div onclick="this.getRootNode().host.close()">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
             </div>
           </header>
@@ -88,33 +90,42 @@ export class TravelDirectionLinks extends HTMLElement {
     `;
   }
 
-  #renderOptions(locations) {
-    return locations.map((location) => {
+  #renderOptions() {
+    return this.#locations.map((location, index) => {
       return /*html*/ `
-        <option value="${location.position}">${location.title}</option>
-      `
+        <option value="${index}">${location.title}</option>
+      `;
     }).join("");
   }
 
   generateGoogleLink() {
-    let origin = this.shadowRoot.querySelector("#select_origin").value.split(",");
-    let destination = this.shadowRoot.querySelector("#select_destination").value.split(",");
+    let origin = this.#locations[parseInt(this.shadowRoot.querySelector("#select_origin").value)];
+    let destination = this.#locations[parseInt(this.shadowRoot.querySelector("#select_destination").value)];
 
-    window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin[1]},${origin[0]}&destination=${destination[1]},${destination[0]}&travelmode=transit`, "_blank");
-    this.shadowRoot.querySelector("#dialog").close();
+    window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin.position[1]},${origin.position[0]}&destination=${destination.position[1]},${destination.position[0]}&travelmode=transit`, "_blank");
+    this.close();
   }
 
   generateOrganicLink() {
-    let origin = this.shadowRoot.querySelector("#select_origin").value.split(",");
-    let destination = this.shadowRoot.querySelector("#select_destination").value.split(",");
+    let origin = this.#locations[parseInt(this.shadowRoot.querySelector("#select_origin").value)];
+    let destination = this.#locations[parseInt(this.shadowRoot.querySelector("#select_destination").value)];
 
-    window.open(`om://route?sll=${origin[1]},${origin[0]}&dll=${destination[1]},${destination[0]}&type=transit`);
+    window.open(`om://route?sll=${origin.position[1]},${origin.position[0]}&saddr=${encodeURIComponent(origin.title)}&dll=${destination.position[1]},${destination.position[0]}&daddr=${encodeURIComponent(destination.title)}&type=transit`);
+    this.close();
+  }
+
+  close() {
     this.shadowRoot.querySelector("#dialog").close();
+    this.shadowRoot.querySelector("#select_origin").innerHTML = "";
+    this.shadowRoot.querySelector("#select_destination").innerHTML = "";
+    this.#locations = [];
   }
 
   set locations(locations) {
-    this.shadowRoot.querySelector("#select_origin").innerHTML = this.#renderOptions(locations);
-    this.shadowRoot.querySelector("#select_destination").innerHTML = this.#renderOptions(locations);
+    this.#locations = locations;
+    let options = this.#renderOptions();
+    this.shadowRoot.querySelector("#select_origin").innerHTML = options;
+    this.shadowRoot.querySelector("#select_destination").innerHTML = options;
     this.shadowRoot.querySelector("#dialog").showModal();
   }
 }
