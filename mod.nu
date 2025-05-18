@@ -10,8 +10,6 @@ export def start [] {
   # stop
   let network = (docker network ls --format json --filter $"name=travel-manager" | from json)
 
-  print $network
-
   if $network == null {
     log info "creating network"
     docker network create --driver bridge travel-manager
@@ -27,10 +25,19 @@ export def start [] {
   } else if $couchdb.state != "running" {
     log info "starting couchdb container"
     docker start travel-manager-couchdb
+  } else {
+    log info "couchdb container already running"
   }
 
+  log info "waiting for couchdb to be ready"
   sleep 5sec
-  http put http://admin:password@localhost:5984/travel_manager ""
+
+  if "travel_manager" in (http get http://admin:password@localhost:5984/_all_dbs) {
+    log info "travel_manager database already exists"
+  } else {
+    log info "creating travel_manager database"
+    http put http://admin:password@localhost:5984/travel_manager ""
+  }
 
   let server = (docker ps --filter "name=travel-manager-server" --format json -a | from json)
 
