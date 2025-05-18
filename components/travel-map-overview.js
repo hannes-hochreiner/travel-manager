@@ -139,7 +139,7 @@ export class TravelMapOverview extends HTMLElement {
 
     if (objects && objects.length > 0) {
       this.#vectorSource.addFeatures(objects.map(object => {
-        if (object.type === "stay") {
+        if (object.type === "stay" || object.type === "location") {
           let position = object.position || [0, 0];
           long_max = Math.max(long_max, position[0]);
           long_min = Math.min(long_min, position[0]);
