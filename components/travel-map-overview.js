@@ -130,7 +130,6 @@ export class TravelMapOverview extends HTMLElement {
   }
 
   set objects(objects) {
-    console.log("set objects");
     let long_max = -180;
     let long_min = 180;
     let lat_max = -90;

@@ -143,8 +143,6 @@ export class TravelTrip extends HTMLElement {
 
     let list = [...this.#transports, ...this.#stays];
     
-    console.log(list.length);
-
     list.sort((a, b) => {
       let aDate = new Date();
 
