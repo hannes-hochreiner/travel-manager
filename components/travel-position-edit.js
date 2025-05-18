@@ -99,6 +99,13 @@ export class TravelPositionEdit extends HTMLElement {
     `;
 
     this.#position = [0,0];
+    let position = this.getAttribute("value");
+
+    if (position) {
+      position = position.split(",");
+
+      this.#position = [parseFloat(position[0]), parseFloat(position[1])];
+    }
     
     let longitude = this.shadowRoot.querySelector("#longitude");
     let latitude = this.shadowRoot.querySelector("#latitude");

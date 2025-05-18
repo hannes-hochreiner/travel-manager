@@ -2,8 +2,8 @@ import { Map, View, Feature, Overlay } from 'https://cdn.jsdelivr.net/npm/ol/+es
 import { toLonLat, fromLonLat } from 'https://cdn.jsdelivr.net/npm/ol/proj/+esm';
 import { OSM, Vector as VectorSource } from 'https://cdn.jsdelivr.net/npm/ol/source/+esm';
 import { Tile as TileLayer, Vector as VectorLayer } from 'https://cdn.jsdelivr.net/npm/ol/layer/+esm';
-import { Point } from 'https://cdn.jsdelivr.net/npm/ol/geom/+esm';
-import { Style, Icon } from 'https://cdn.jsdelivr.net/npm/ol/style/+esm';
+import { Point, LineString } from 'https://cdn.jsdelivr.net/npm/ol/geom/+esm';
+import { Style, Icon, Stroke } from 'https://cdn.jsdelivr.net/npm/ol/style/+esm';
 
 export class TravelMapOverview extends HTMLElement {
   #map = null;
@@ -130,6 +130,7 @@ export class TravelMapOverview extends HTMLElement {
   }
 
   set objects(objects) {
+    console.log("set objects");
     let long_max = -180;
     let long_min = 180;
     let lat_max = -90;
@@ -139,36 +140,77 @@ export class TravelMapOverview extends HTMLElement {
 
     if (objects && objects.length > 0) {
       this.#vectorSource.addFeatures(objects.map(object => {
-        let position = object.position || [0, 0];
-        long_max = Math.max(long_max, position[0]);
-        long_min = Math.min(long_min, position[0]);
-        lat_max = Math.max(lat_max, position[1]);
-        lat_min = Math.min(lat_min, position[1]);
+        if (object.type === "stay") {
+          let position = object.position || [0, 0];
+          long_max = Math.max(long_max, position[0]);
+          long_min = Math.min(long_min, position[0]);
+          lat_max = Math.max(lat_max, position[1]);
+          lat_min = Math.min(lat_min, position[1]);
+  
+          let feature = new Feature({
+            geometry: new Point(fromLonLat(position)),
+          });
+  
+          if (this.#icons[object.subtype]) {
+            feature.setStyle([this.#icons[object.subtype]]);
+          } else {
+            feature.setStyle([this.#iconDefault]);
+          }
+  
+          let overlayElement = document.createElement('div');
+          overlayElement.innerHTML = /*html*/ `
+            <div class="overlay-content">
+              <p>${object.title}</p>
+            </div>
+          `;
+    
+          this.#map.addOverlay(new Overlay({
+            position: fromLonLat(position),
+            positioning: 'top-center',
+            element: overlayElement,
+          }));
+    
+          return feature;
+        } else if (object.type === "transport") {
+          let startPosition = object.startPosition || [0, 0];
+          long_max = Math.max(long_max, startPosition[0]);
+          long_min = Math.min(long_min, startPosition[0]);
+          lat_max = Math.max(lat_max, startPosition[1]);
+          lat_min = Math.min(lat_min, startPosition[1]);
+          let endPosition = object.endPosition || [0, 0];
+          long_max = Math.max(long_max, endPosition[0]);
+          long_min = Math.min(long_min, endPosition[0]);
+          lat_max = Math.max(lat_max, endPosition[1]);
+          lat_min = Math.min(lat_min, endPosition[1]);
+  
+          let feature = new Feature({
+            geometry: new LineString([fromLonLat(startPosition), fromLonLat(endPosition)]),
+          });
 
-        let feature = new Feature({
-          geometry: new Point(fromLonLat(position)),
-        });
+          const dx = endPosition[0] - startPosition[0];
+          const dy = endPosition[1] - startPosition[1];
+          const rotation = Math.atan2(dy, dx) - (Math.PI / 4);
 
-        if (this.#icons[object.subtype]) {
-          feature.setStyle([this.#icons[object.subtype]]);
-        } else {
-          feature.setStyle([this.#iconDefault]);
+          feature.setStyle([
+            new Style({
+              stroke: new Stroke({
+                color: '#143f52',
+                width: 2,
+              }),
+            }),
+            new Style({
+              geometry: new Point(fromLonLat([(endPosition[0] + startPosition[0]) / 2.0, (endPosition[1] + startPosition[1]) / 2.0])),
+              image: new Icon({
+                src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M516-120 402-402 120-516v-56l720-268-268 720h-56Z"/></svg>`], {type: 'image/svg+xml'})),
+                anchor: [0.5, 0.5],
+                rotateWithView: true,
+                rotation: -rotation,
+              }),
+            }),
+          ]);
+
+          return feature;
         }
-
-        let overlayElement = document.createElement('div');
-        overlayElement.innerHTML = /*html*/ `
-          <div class="overlay-content">
-            <p>${object.title}</p>
-          </div>
-        `;
-  
-        this.#map.addOverlay(new Overlay({
-          position: fromLonLat(position),
-          positioning: 'top-center',
-          element: overlayElement,
-        }));
-  
-        return feature;
       }));
 
       let min = fromLonLat([long_min, lat_min]);
