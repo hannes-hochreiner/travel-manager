@@ -1,3 +1,5 @@
+import { escapeHtml } from "../objects/utils.js";
+
 export class TravelDirectionLinks extends HTMLElement {
   #locations = [];
 
@@ -93,7 +95,7 @@ export class TravelDirectionLinks extends HTMLElement {
   #renderOptions() {
     return this.#locations.map((location, index) => {
       return /*html*/ `
-        <option value="${index}">${location.title}</option>
+        <option value="${index}">${escapeHtml(location.title)}</option>
       `;
     }).join("");
   }
