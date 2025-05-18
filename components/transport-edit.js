@@ -1,11 +1,14 @@
 import { TravelPositionEdit } from "./travel-position-edit.js";
 import { Transport } from "../objects/transport.js";
+import { Repo } from "../repo.js";
+import { escapeHtml } from "../objects/utils.js";
 
 export class TransportEdit extends HTMLElement {
   #object = null;
   #id = null;
   #resolve = null;
   #reject = null;
+  #deletion = [];
 
   constructor() {
     super();
@@ -65,14 +68,29 @@ export class TransportEdit extends HTMLElement {
           width: calc(100% - 0.5rem);
         }
 
-        p {
-          background-color: #aaa;
-          padding: 5px;
+        div.attachments {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        div.attachments div.attachment {
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
         }
 
         button svg {
           width: 24px;
           height: 24px;
+        }
+
+        button.deleted svg {
+          fill: var(--tertiary-dark);
+        }
+
+        button.deleted {
+          background-color: var(--tertiary-light);
         }
 
         #map_${this.#id} {
@@ -96,6 +114,13 @@ export class TransportEdit extends HTMLElement {
               <travel-position-edit id="startPosition" value="${this.#object.startPosition}"></travel-position-edit>
             </fieldset>
             <textarea id="description">${this.#object.description}</textarea>
+            <fieldset>
+              <legend>Attachments</legend>
+              <input id="input_files" type="file" multiple>
+              <div class="attachments">
+                ${this.renderAttachments()}
+              </div>
+            </fieldset>
             <fieldset>
               <legend>End</legend>
               <label for="endDatetime">End Date and Time</label>
@@ -124,8 +149,34 @@ export class TransportEdit extends HTMLElement {
     }).join("");
   }
 
+  renderAttachments() {
+    return this.#object._attachments ? Object.entries(this.#object._attachments).map((attachment) => {
+      return /*html*/ `
+        <div class="attachment">
+          <p>${escapeHtml(attachment[0])}</p>
+          <button onclick="this.getRootNode().host.toggleDeletion(this, '${attachment[0]}')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+          </button>
+        </div>
+      `
+    }).join("") : "";
+  }
+
+  toggleDeletion(button, attachment) {
+    if (this.#deletion.includes(attachment)) {
+      console.log("remove", attachment);
+      this.#deletion.splice(this.#deletion.indexOf(attachment), 1);
+      button.classList.remove("deleted");
+    } else {
+      console.log("add", attachment);
+      this.#deletion.push(attachment);
+      button.classList.add("deleted");
+    }
+  }
+
   async edit_object(obj) {
     this.#object = obj;
+    this.#deletion = [];
     this.shadowRoot.innerHTML = this.#render();
 
     return new Promise((resolve, reject) => {
@@ -135,19 +186,43 @@ export class TransportEdit extends HTMLElement {
     });
   }
 
-  edit_ok() {
+  async edit_ok() {
     this.shadowRoot.querySelector("#dialog").close();
+
+    let repo = await Repo.create();
+
     this.#object.title = this.shadowRoot.querySelector("#title").value;
     this.#object.startDateTime = this.shadowRoot.querySelector("#startDatetime").value;
     this.#object.startPosition = this.shadowRoot.querySelector("#startPosition").value;
     this.#object.description = this.shadowRoot.querySelector("#description").value;
     this.#object.endDateTime = this.shadowRoot.querySelector("#endDatetime").value;
     this.#object.endPosition = this.shadowRoot.querySelector("#endPosition").value;
-    this.#resolve(this.#object);
+
+    let fileList = this.shadowRoot.querySelector("#input_files").files;
+
+    for (let i = 0; i < fileList.length; i++) {
+      if (!this.#object._attachments) {
+        this.#object._attachments = {};
+      }
+
+      this.#object._attachments[fileList[i].name] = {
+        content_type: fileList[i].type,
+        data: fileList[i]
+      };
+    }
+
+    await repo.addDoc(this.#object);
+
+    for (let i = 0; i < this.#deletion.length; i++) {
+      const obj = await repo.getDoc(this.#object._id);
+      await repo.deleteAttachment(obj._id, this.#deletion[i], obj._rev);
+    }
+
+    this.#resolve({action: "update"});
   }
 
   edit_cancel() {
     this.shadowRoot.querySelector("#dialog").close();
-    this.#resolve();
+    this.#resolve({action: "cancel"});
   }
 }

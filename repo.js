@@ -57,6 +57,18 @@ export class Repo {
     return results;
   }
 
+  async addAttachment(documentId, attachment, rev) {
+    await this.#db.putAttachment(documentId, attachment.name, rev, attachment, attachment.type);
+  }
+
+  async getAttachment(documentId, attachmentId) {
+    return await this.#db.getAttachment(documentId, attachmentId);
+  }
+
+  async deleteAttachment(documentId, attachmentId, rev) {
+    await this.#db.removeAttachment(documentId, attachmentId, rev);
+  }
+
   async sync() {
     let origin = "";
 

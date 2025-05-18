@@ -107,7 +107,7 @@ export class TravelTrip extends HTMLElement {
       },
       "transport": {
         "view": TransportView,
-        "editCb":(obj) => this.shadowRoot.querySelector("transport-edit").edit_object(obj),
+        "editCb":(obj) => this.#editTransport(obj),
         "deleteCb":(obj) => this.#deleteObject(obj)
       }
     });
@@ -187,14 +187,21 @@ export class TravelTrip extends HTMLElement {
     })
   }
 
+  async #editTransport(obj) {
+    const result = await this.shadowRoot.querySelector("transport-edit").edit_object(obj);
+
+    if (result.action !== "cancel") {
+      await this.#updateList();
+    }
+  }
+
   async addTransport() {
     let transport = Transport.default();
     transport.parent = this.#tripId;
 
-    transport = await this.shadowRoot.querySelector("transport-edit").edit_object(transport);
+    const result = await this.shadowRoot.querySelector("transport-edit").edit_object(transport);
 
-    if (transport) {
-      await this.#repo.addDoc(transport);
+    if (result.action !== "cancel") {
       await this.#updateList();
     }
   }
