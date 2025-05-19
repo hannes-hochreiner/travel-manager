@@ -49,7 +49,7 @@ export class StayView extends HTMLElement {
         .duration {
           display: flex;
           flex-direction: row;
-          justify-content: center;
+          justify-content: space-around;
           align-items: center;
         }
 
