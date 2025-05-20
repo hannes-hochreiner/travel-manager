@@ -37,10 +37,10 @@ export class TravelConfig extends HTMLElement {
       };
     }
 
-    shadowRoot.innerHTML = this.#render();
+    shadowRoot.innerHTML = await this.#render();
   }
 
-  #render() {
+  async #render() {
     return /*html*/ `
       <style>
         div.content {
@@ -98,6 +98,9 @@ export class TravelConfig extends HTMLElement {
           </article>
           <article id="networking">
             ${this.#renderNetworking()}
+          </article>
+          <article id="storage">
+            ${await this.#renderStorage()}
           </article>
           <travel-login></travel-login>
           <travel-notification></travel-notification>
@@ -157,6 +160,43 @@ export class TravelConfig extends HTMLElement {
         </button>
       </main>
     `
+  }
+
+  async #renderStorage() {
+    let estimate = await navigator.storage.estimate();
+
+    return /*html*/ `
+      <header>
+        Storage
+      </header>
+      <main>
+        Quota: ${Math.round(estimate.quota / (1024 * 1024))} MB<br>
+        Usage: ${Math.round(estimate.usage / (1024 * 1024))} MB<br>
+        Persisted: ${(await navigator.storage.persisted()) ? "yes" : "no"}
+        <button onclick="this.getRootNode().host.persist(event)">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M160-120v-80h640v80H160Zm320-160L280-480l56-56 104 104v-408h80v408l104-104 56 56-200 200Z"/></svg> Persist
+        </button>
+      </main>
+    `
+  }
+
+  async persist() {
+    try {
+      let result = await navigator.storage.persist(); 
+
+      console.log("persist", result);
+
+      if (result) {
+        this.#bc.postMessage({title: "Persist", message: "Storage persisted", type: "info"});
+      } else {
+        this.#bc.postMessage({title: "Persist Error", message: "Storage not persisted", type: "error"});
+      }
+
+      this.shadowRoot.querySelector("#storage").innerHTML = await this.#renderStorage();
+    } catch (error) {
+      console.error(error);
+      this.#bc.postMessage({title: "Persist Error", message: error.message, type: "error"});
+    }
   }
 
   async login() {
