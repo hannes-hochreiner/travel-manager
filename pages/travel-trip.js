@@ -19,6 +19,7 @@ export class TravelTrip extends HTMLElement {
   #tripList = null;
   #stays = null;
   #transports = null;
+  #filter = null;
 
   constructor(repo, params) {
     super();
@@ -63,6 +64,14 @@ export class TravelTrip extends HTMLElement {
         a:hover .breadcrumb {
           background: linear-gradient(45deg, var(--secondary), var(--secondary-light));
         }
+
+        .actions button.selected {
+          background: var(--secondary-light);
+        }
+
+        .actions button.selected svg {
+          fill: var(--secondary-dark);
+        }
       </style>
       <div class="content">
         <travel-header>
@@ -80,6 +89,10 @@ export class TravelTrip extends HTMLElement {
         <div class="breadcrumb">
           <h2>${this.#trip.title}</h2>
           <div class="actions">
+            <button id="filterFuture" onclick="this.getRootNode().host.toggleFilterFuture(this)">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M360-300q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M80-240v-480h80v480H80Zm560 0-57-56 144-144H240v-80h487L584-664l56-56 240 240-240 240Z"/></svg>
+            </button>
             <button id="om_link">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
@@ -120,6 +133,19 @@ export class TravelTrip extends HTMLElement {
     await this.#update();
   }
 
+  toggleFilterFuture(button) {
+    console.log(button);
+    if (this.#filter === "future") {
+      this.#filter = null;
+      button.classList.remove("selected");
+    } else {
+      this.#filter = "future";
+      button.classList.add("selected");
+    }
+
+    this.#update();
+  }
+
   #deleteObject(object) {
     let tc = this.shadowRoot.querySelector("travel-confirmation");
 
@@ -141,7 +167,20 @@ export class TravelTrip extends HTMLElement {
     this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
     this.#transports = await this.#repo.getAllDocs("transport", this.#tripId);
 
-    let list = [...this.#transports, ...this.#stays];
+    let list = [...this.#transports, ...this.#stays].filter((obj) => {
+      if (this.#filter === "future") {
+        let date = "";
+
+        if (obj.endDate) {
+          date = obj.endDate;
+        } else if (obj.endDateTime) {
+          date = obj.endDateTime.substring(0, 10);
+        }
+        return date >= (new Date()).toISOString().substring(0, 10);
+      }
+
+      return true;
+    });
     
     list.sort((a, b) => {
       let aDate = new Date();
