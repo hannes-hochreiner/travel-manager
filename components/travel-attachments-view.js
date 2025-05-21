@@ -1,9 +1,16 @@
+import { escapeHtml } from "../objects/utils.js";
+
 export class TravelAttachmentsView extends HTMLElement {
+  #attachments = {};
+
   constructor() {
     super();
 
     const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.innerHTML = /*html*/ `
+  }
+
+  #render() {
+    return /*html*/ `
       <style>
         .attachments {
           display: grid;
@@ -12,13 +19,26 @@ export class TravelAttachmentsView extends HTMLElement {
           gap: 0.5rem;
         }
 
-        ::slotted([slot="attachment"]) {
+        button.attachment {
           height: 5rem;
         }
       </style>
       <div class="attachments">
-        <slot name="attachment"></slot>
+        ${this.#renderAttachments()}
       </div>
     `;
+  }
+
+  #renderAttachments() {
+    return Object.entries(this.#attachments).map((attachment) => {
+      return /*html*/ `
+        <button slot="attachment" onclick="this.getRootNode().host.dispatchEvent(new CustomEvent('open-attachment', { detail: { attachment: '${escapeHtml(attachment[0])}' } }))" class="attachment">${escapeHtml(attachment[0])}</button>
+      `;
+    }).join("");
+  }
+
+  set attachments(attachments) {
+    this.#attachments = attachments ? attachments : {};
+    this.shadowRoot.innerHTML = this.#render();
   }
 }

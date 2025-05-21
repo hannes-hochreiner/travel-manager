@@ -5,12 +5,21 @@ import { Repo } from "../repo.js";
 customElements.define("travel-attachments-view", TravelAttachmentsView);
 
 export class TransportView extends HTMLElement {
+  #object = null;
+
   constructor(object, editCb, deleteCb) {
     super();
 
     const shadowRoot = this.attachShadow({ mode: "open", slotAssignment: "manual" });
 
     shadowRoot.innerHTML = this.#render(object);
+
+    this.#object = object;
+    const attachmentsView = this.shadowRoot.querySelector("travel-attachments-view")
+    attachmentsView.attachments = object._attachments;
+    attachmentsView.addEventListener("open-attachment", (event) => {
+      this.openAttachment(object._id, event.detail.attachment);
+    });
 
     this.shadowRoot.querySelector("#button_edit")
       .addEventListener("click", () => editCb(object));
@@ -97,9 +106,7 @@ export class TransportView extends HTMLElement {
         <main>
           <p>${marked.parse(object.description)}</p>
         </main>
-        <travel-attachments-view>
-          ${this.#renderAttachments(object._id, object._attachments)}
-        </travel-attachments-view>
+        <travel-attachments-view></travel-attachments-view>
         <footer>
           <slot name="edit">
             <button id="button_edit" class="action">
@@ -114,18 +121,6 @@ export class TransportView extends HTMLElement {
         </footer>
       </div>
     `;
-  }
-
-  #renderAttachments(objectId, attachments) {
-    if (!attachments) {
-      return "";
-    }
-
-    return Object.entries(attachments).map((attachment) => {
-      return /*html*/ `
-        <button slot="attachment" onclick="this.getRootNode().host.openAttachment('${objectId}', '${attachment[0]}')">${escapeHtml(attachment[0])}</button>
-      `;
-    }).join("");
   }
 
   async openAttachment(objectId, attachment) {
