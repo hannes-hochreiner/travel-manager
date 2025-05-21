@@ -164,11 +164,9 @@ export class TransportEdit extends HTMLElement {
 
   toggleDeletion(button, attachment) {
     if (this.#deletion.includes(attachment)) {
-      console.log("remove", attachment);
       this.#deletion.splice(this.#deletion.indexOf(attachment), 1);
       button.classList.remove("deleted");
     } else {
-      console.log("add", attachment);
       this.#deletion.push(attachment);
       button.classList.add("deleted");
     }
@@ -189,7 +187,7 @@ export class TransportEdit extends HTMLElement {
   async edit_ok() {
     this.shadowRoot.querySelector("#dialog").close();
 
-    let repo = await Repo.create();
+    let repo = await new Repo();
 
     this.#object.title = this.shadowRoot.querySelector("#title").value;
     this.#object.startDateTime = this.shadowRoot.querySelector("#startDatetime").value;

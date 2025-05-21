@@ -7,12 +7,13 @@ import { TravelConfirmation } from "../components/travel-confirmation.js";
 import { TransportEdit } from "../components/transport-edit.js";
 import { TransportView } from "../components/transport-view.js";
 import { Transport } from "../objects/transport.js";
+import { Repo } from "../repo.js";
+// import { escapeHtml } from "../objects/utils.js";
 
 customElements.define("transport-edit", TransportEdit);
 customElements.define("transport-view", TransportView);
 
 export class TravelTrip extends HTMLElement {
-  #repo = null;
   #tripId = null;
   #trip = null;
   #stayEdit = null;
@@ -21,15 +22,15 @@ export class TravelTrip extends HTMLElement {
   #transports = null;
   #filter = null;
 
-  constructor(repo, params) {
+  constructor(params) {
     super();
-    this.#repo = repo;
     this.#tripId = params["tripId"];
   }
 
   async connectedCallback() {
     this.attachShadow({ mode: "open", slotAssignment: "manual" });
-    this.#trip = await this.#repo.getDoc(this.#tripId);
+    const repo = await new Repo();
+    this.#trip = await repo.getDoc(this.#tripId);
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
@@ -154,7 +155,9 @@ export class TravelTrip extends HTMLElement {
       <div slot="message">Are you sure you want to delete ${object.title}?</div>
     `;
     tc.confirm = async () => {
-      await this.#repo.deleteDoc(object);
+      const repo = await new Repo();
+
+      await repo.deleteDoc(object);
       await this.#update();
     };
   }
@@ -164,8 +167,10 @@ export class TravelTrip extends HTMLElement {
   }
 
   async #updateList() {
-    this.#stays = await this.#repo.getAllDocs("stay", this.#tripId);
-    this.#transports = await this.#repo.getAllDocs("transport", this.#tripId);
+    const repo = await new Repo();
+
+    this.#stays = await repo.getAllDocs("stay", this.#tripId);
+    this.#transports = await repo.getAllDocs("transport", this.#tripId);
 
     let list = [...this.#transports, ...this.#stays].filter((obj) => {
       if (this.#filter === "future") {
@@ -220,10 +225,11 @@ export class TravelTrip extends HTMLElement {
     },this.#editStayComplete.bind(this));
   }
 
-  #editStayComplete(obj) {
-    this.#repo.addDoc(obj).then(async () => {
-      await this.#updateList();
-    })
+  async #editStayComplete(obj) {
+    const repo = await new Repo();
+
+    await repo.addDoc(obj)
+    await this.#updateList();
   }
 
   async #editTransport(obj) {

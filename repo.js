@@ -2,28 +2,33 @@ import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
 import { default as PouchDbFind } from "https://cdn.jsdelivr.net/npm/pouchdb-find/+esm";
 
 export class Repo {
+  static #instance = null;
   #db = null;
   #dbLocal = null;
 
-  static async create() {
-    let repo = new Repo();
-    
-    PouchDb.plugin(PouchDbFind);
-    repo.#db = new PouchDb("travel");
-    repo.#dbLocal = new PouchDb("travel_local");
+  constructor() {
+    return new Promise((resolve, reject) => {
+      if (!Repo.#instance) {
+        Repo.#instance = this;
 
-    try {
-      await repo.#db.createIndex({
-        index: {
-          fields: ["type", "parent"],
-          // name: "id_parent",
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    return repo;
+        PouchDb.plugin(PouchDbFind);
+        this.#db = new PouchDb("travel");
+        this.#dbLocal = new PouchDb("travel_local");
+  
+        try {
+          this.#db.createIndex({
+            index: {
+              fields: ["type", "parent"],
+              // name: "id_parent",
+            },
+          }).then(resolve(Repo.#instance));
+        } catch (error) {
+          reject(error);
+        }  
+      } else {
+        resolve(Repo.#instance);
+      }
+    });
   }
 
   async addDoc(doc) {

@@ -133,7 +133,7 @@ export class TransportView extends HTMLElement {
   }
 
   async openAttachment(objectId, attachment) {
-    let repo = await Repo.create();
+    let repo = await new Repo();
     let attachmentObj = await repo.getAttachment(objectId, attachment);
 
     const url = URL.createObjectURL(attachmentObj);

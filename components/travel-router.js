@@ -4,7 +4,6 @@ import { TravelStay } from "../pages/travel-stay.js";
 import { TravelConfig } from "../pages/travel-config.js";
 
 export class TravelRouter extends HTMLElement {
-  #repo = null;
   #slotContent = null;
   #routes = [
     {
@@ -28,7 +27,7 @@ export class TravelRouter extends HTMLElement {
     },
   ];
 
-  constructor(repo) {
+  constructor() {
     super();
 
     const shadowRoot = this.attachShadow({
@@ -40,7 +39,6 @@ export class TravelRouter extends HTMLElement {
       </style>
       <slot><div id="default">Loading TravelRouter...</div></slot>
     `;
-    this.#repo = repo;
   }
 
   #navigate(event) {
@@ -80,7 +78,7 @@ export class TravelRouter extends HTMLElement {
       this.#slotContent = null;
     }
 
-    this.#slotContent = new type(this.#repo, groups);
+    this.#slotContent = new type(groups);
     this.appendChild(this.#slotContent);
     this.shadowRoot.querySelector("slot").assign(this.#slotContent);
   }
@@ -97,5 +95,3 @@ export class TravelRouter extends HTMLElement {
     }
   }
 }
-
-customElements.define("travel-router", TravelRouter);

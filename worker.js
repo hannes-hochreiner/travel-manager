@@ -5,7 +5,7 @@ const bc = new BroadcastChannel("notification");
 
 onmessage = async (e) => {
   if (e.data.type === "init") {
-    let repo = await Repo.create();
+    let repo = await new Repo();
 
     cancelToken = setInterval(async () => {
       try {

@@ -1,24 +1,24 @@
 import { TravelHeader } from "../components/travel-header.js";
 import { TravelLogin } from "../components/travel-login.js";
 import { TravelNotification } from "../components/travel-notification.js";
+import { Repo } from "../repo.js";
 
 export class TravelConfig extends HTMLElement {
-  #repo = null;
   #bc = null;
   #config = null;
   #info = null;
 
-  constructor(repo) {
+  constructor() {
     super();
-    this.#repo = repo;
     this.#bc = new BroadcastChannel("notification");
   }
 
   async connectedCallback() {
     const shadowRoot = this.attachShadow({ mode: "open" });
+    const repo = await new Repo();
 
     try {
-      this.#config = await this.#repo.getConfig();
+      this.#config = await repo.getConfig();
     } catch (err) {
       this.#config = {
         _id: "config",
@@ -28,7 +28,7 @@ export class TravelConfig extends HTMLElement {
     }
 
     try {
-      this.#info = await this.#repo.getInfo();
+      this.#info = await repo.getInfo();
     } catch (err) {
       this.#info = {
         _id: "info",
@@ -214,9 +214,10 @@ export class TravelConfig extends HTMLElement {
           body: JSON.stringify({name: loginData.username, password: loginData.password})
         }));
 
+        const repo = await new Repo();
         this.#info.lastLogin = new Date();
-        await this.#repo.setInfo(this.#info);
-        this.#info = await this.#repo.getInfo();
+        await repo.setInfo(this.#info);
+        this.#info = await repo.getInfo();
         this.shadowRoot.querySelector("#authentication").innerHTML = this.#renderAuthentication();
         this.#bc.postMessage({title: "Login", message: "Login successful", type: "success"});
       }
@@ -228,10 +229,11 @@ export class TravelConfig extends HTMLElement {
 
   async sync() {
     try {
-      await this.#repo.sync();
+      const repo = await new Repo();
+      await repo.sync();
       this.#info.lastSync = new Date();
-      await this.#repo.setInfo(this.#info);
-      this.#info = await this.#repo.getInfo();
+      await repo.setInfo(this.#info);
+      this.#info = await repo.getInfo();
       this.shadowRoot.querySelector("#synchronization").innerHTML = this.#renderSynchronization();
       this.#bc.postMessage({title: "Sync", message: "Synchronization successful", type: "info"});
     } catch (err) {
@@ -242,9 +244,10 @@ export class TravelConfig extends HTMLElement {
 
   async toggleConnect() {
     try {
+      const repo = await new Repo();
       this.#config.offline = !this.#config.offline;
-      await this.#repo.setConfig(this.#config);
-      this.#config = await this.#repo.getConfig();
+      await repo.setConfig(this.#config);
+      this.#config = await repo.getConfig();
       this.shadowRoot.querySelector("#networking").innerHTML = this.#renderNetworking();
       this.#bc.postMessage({title: "Connection", message: this.#config.offline ? "Offline" : "Online", type: "info"});
     } catch (error) {
@@ -255,9 +258,10 @@ export class TravelConfig extends HTMLElement {
 
   async toggleNotifyOnAutoSync() {
     try {
+      const repo = await new Repo();
       this.#config.notifyOnAutoSync = !this.#config.notifyOnAutoSync;
-      await this.#repo.setConfig(this.#config);
-      this.#config = await this.#repo.getConfig();
+      await repo.setConfig(this.#config);
+      this.#config = await repo.getConfig();
       this.shadowRoot.querySelector("#synchronization").innerHTML = this.#renderSynchronization();
       this.#bc.postMessage({title: "Notification", message: this.#config.notifyOnAutoSync ? "Automatic synchronization notification enabled" : "Automatic synchronization notification disabled", type: "info"});
     } catch (error) {

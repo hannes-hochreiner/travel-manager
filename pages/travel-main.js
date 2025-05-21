@@ -5,16 +5,13 @@ import { TripView } from "../components/trip-view.js";
 import { TravelLogin } from "../components/travel-login.js";
 import { TravelConfirmation } from "../components/travel-confirmation.js";
 import { TravelNotification } from "../components/travel-notification.js";
+import { Repo } from "../repo.js";
 
 export class TravelMain extends HTMLElement {
-  #repo = null;
   #travelList = null;
-  #bc = null
 
-  constructor(repo) {
+  constructor() {
     super();
-    this.#repo = repo;
-    this.#bc = new BroadcastChannel("notification");
   }
 
   async connectedCallback() {
@@ -66,9 +63,9 @@ export class TravelMain extends HTMLElement {
   }
 
   async #update() {
-    if (this.#repo) {
-      this.#travelList.objects = await this.#repo.getAllDocs("travel");
-    }
+    const repo = await new Repo();
+
+    this.#travelList.objects = await repo.getAllDocs("travel");
   }
 
   #addTravel() {
@@ -80,8 +77,10 @@ export class TravelMain extends HTMLElement {
     },this.edit_complete.bind(this));
   }
 
-  edit_complete(obj) {
-    this.#repo.addDoc(obj).then(() => {
+  async edit_complete(obj) {
+    const repo = await new Repo();
+    
+    repo.addDoc(obj).then(() => {
       this.#update();
     });
   }
@@ -94,7 +93,9 @@ export class TravelMain extends HTMLElement {
       <div slot="message">Are you sure you want to delete ${travel.title}?</div>
     `;
     tc.confirm = async () => {
-      await this.#repo.deleteDoc(travel);
+      const repo = await new Repo();
+
+      await repo.deleteDoc(travel);
       await this.#update();
     };
   }

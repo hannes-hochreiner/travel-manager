@@ -6,9 +6,10 @@ import { TravelHeader } from "../components/travel-header.js";
 import { TravelMapOverview } from "../components/travel-map-overview.js";
 import { TravelConfirmation } from "../components/travel-confirmation.js";
 import { TravelDirectionLinks } from "../components/travel-direction-links.js";
+import { Repo } from "../repo.js";
+// import { escapeHtml } from "../objects/utils.js";
 
 export class TravelStay extends HTMLElement {
-  #repo = null;
   #tripId = null;
   #trip = null;
   #stayId = null;
@@ -17,17 +18,17 @@ export class TravelStay extends HTMLElement {
   #locationList = null;
   #locations = [];
 
-  constructor(repo, params) {
+  constructor(params) {
     super();
-    this.#repo = repo;
     this.#tripId = params["tripId"];
     this.#stayId = params["stayId"];
   }
   
   async connectedCallback() {
     this.attachShadow({ mode: "open", slotAssignment: "manual" });
-    this.#trip = await this.#repo.getDoc(this.#tripId);
-    this.#stay = await this.#repo.getDoc(this.#stayId);
+    const repo = await new Repo();
+    this.#trip = await repo.getDoc(this.#tripId);
+    this.#stay = await repo.getDoc(this.#stayId);
 
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
@@ -125,7 +126,8 @@ export class TravelStay extends HTMLElement {
       <div slot="message">Are you sure you want to delete ${location.title}?</div>
     `;
     tc.confirm = async () => {
-      await this.#repo.deleteDoc(location);
+      const repo = await new Repo();
+      await repo.deleteDoc(location);
       await this.#update();
     };
   }
@@ -135,7 +137,8 @@ export class TravelStay extends HTMLElement {
   }
 
   async #updateList() {
-    this.#locations = await this.#repo.getAllDocs("location", this.#stayId);
+    const repo = await new Repo();
+    this.#locations = await repo.getAllDocs("location", this.#stayId);
     this.#locations.sort((a, b) => a.title.localeCompare(b.title));
     this.#locationList.objects = this.#locations;
     this.shadowRoot.querySelector("travel-map-overview").objects = this.#locations;
@@ -152,10 +155,11 @@ export class TravelStay extends HTMLElement {
     },this.#editLocationComplete.bind(this));
   }
 
-  #editLocationComplete(obj) {
-    this.#repo.addDoc(obj).then(async () => {
-      await this.#updateList();
-    });
+  async #editLocationComplete(obj) {
+    const repo = await new Repo();
+
+    await repo.addDoc(obj);
+    await this.#updateList();
   }
 
   generateLinks() {

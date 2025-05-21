@@ -41,7 +41,9 @@
     }
   </style>
   <script type="module">
-    import { TravelRepo } from "/components/travel-repo.js";
+    import { TravelRouter } from "/components/travel-router.js";
+
+    customElements.define("travel-router", TravelRouter);
 
     (async () => {
       if ("serviceWorker" in navigator) {
@@ -68,7 +70,7 @@
       worker.postMessage({ type: "init" });
     }
   </script>
-  <travel-repo></travel-repo>
+  <travel-router></travel-router>
 </body>
 
 </html>
