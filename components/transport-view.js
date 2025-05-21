@@ -1,5 +1,8 @@
+import { TravelAttachmentsView } from "./travel-attachments-view.js";
 import { escapeHtml } from "../objects/utils.js";
 import { Repo } from "../repo.js";
+
+customElements.define("travel-attachments-view", TravelAttachmentsView);
 
 export class TransportView extends HTMLElement {
   constructor(object, editCb, deleteCb) {
@@ -71,13 +74,6 @@ export class TransportView extends HTMLElement {
           grid-template-columns: 1fr 3fr;
           align-items: center;
         }
-
-        .attachments {
-          display: flex;
-          flex-direction: column;
-          padding: 0.5rem;
-          gap: 0.5rem;
-        }
       </style>
       <div class="content">
         <header>
@@ -101,9 +97,9 @@ export class TransportView extends HTMLElement {
         <main>
           <p>${marked.parse(object.description)}</p>
         </main>
-        <div class="attachments">
+        <travel-attachments-view>
           ${this.#renderAttachments(object._id, object._attachments)}
-        </div>
+        </travel-attachments-view>
         <footer>
           <slot name="edit">
             <button id="button_edit" class="action">
@@ -127,7 +123,7 @@ export class TransportView extends HTMLElement {
 
     return Object.entries(attachments).map((attachment) => {
       return /*html*/ `
-        <button onclick="this.getRootNode().host.openAttachment('${objectId}', '${attachment[0]}')">${escapeHtml(attachment[0])}</button>
+        <button slot="attachment" onclick="this.getRootNode().host.openAttachment('${objectId}', '${attachment[0]}')">${escapeHtml(attachment[0])}</button>
       `;
     }).join("");
   }
