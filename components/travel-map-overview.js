@@ -198,10 +198,12 @@ export class TravelMapOverview extends HTMLElement {
               }),
             }),
             new Style({
-              geometry: new Point(fromLonLat([(endPosition[0] + startPosition[0]) / 2.0, (endPosition[1] + startPosition[1]) / 2.0])),
+              geometry: new Point(fromLonLat(endPosition)),
               image: new Icon({
                 src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M516-120 402-402 120-516v-56l720-268-268 720h-56Z"/></svg>`], {type: 'image/svg+xml'})),
-                anchor: [0.5, 0.5],
+                anchor: [.5, .5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
                 rotateWithView: true,
                 rotation: -rotation,
               }),
