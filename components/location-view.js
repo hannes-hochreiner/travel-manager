@@ -1,6 +1,6 @@
 import { TravelAttachmentsView } from "./travel-attachments-view.js";
-import { escapeHtml } from "../objects/utils.js";
 import { Repo } from "../repo.js";
+import { Location } from "../objects/location.js";
 
 if (!customElements.get("travel-attachments-view")) {
   customElements.define("travel-attachments-view", TravelAttachmentsView);
@@ -42,15 +42,29 @@ export class LocationView extends HTMLElement {
         header {
           background: linear-gradient(45deg, var(--secondary-light), var(--secondary));
           padding: 0.5rem;
+          display: flex;
+          flex-direction: row;
+          align-items: end;
         }
 
         p {
           padding: 0.5rem;
           margin: 0;
         }
+
+        div#icon svg {
+          margin-right: 0.5rem;
+          fill: var(--secondary-dark);
+          stroke: var(--secondary-dark);
+          height: 1.5rem;
+          width: 1.5rem;
+        }
       </style>
       <div class="content">
         <header>
+          <div id="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Z"/></svg>
+          </div>
           <h2 id="title"></h2>
         </header>
         <main>
@@ -113,6 +127,14 @@ export class LocationView extends HTMLElement {
       }
     });
     this.shadowRoot.querySelector("travel-attachments-view").attachments = object._attachments;
+
+    if (object.subtype) {
+      let option = Location.meta.properties.subtype.options[object.subtype];
+
+      if (option) {
+        this.shadowRoot.querySelector("#icon").innerHTML = option.icon;
+      }
+    }
   }
 
   async openAttachment(objectId, attachment) {
