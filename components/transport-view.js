@@ -2,7 +2,9 @@ import { TravelAttachmentsView } from "./travel-attachments-view.js";
 import { escapeHtml } from "../objects/utils.js";
 import { Repo } from "../repo.js";
 
-customElements.define("travel-attachments-view", TravelAttachmentsView);
+if (!customElements.get("travel-attachments-view")) {
+  customElements.define("travel-attachments-view", TravelAttachmentsView);
+}
 
 export class TransportView extends HTMLElement {
   #object = null;

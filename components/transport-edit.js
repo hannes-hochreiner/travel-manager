@@ -4,7 +4,9 @@ import { Repo } from "../repo.js";
 import { escapeHtml } from "../objects/utils.js";
 import { TravelAttachmentsEdit } from "./travel-attachments-edit.js";
 
-customElements.define("travel-attachments-edit", TravelAttachmentsEdit);
+if (!customElements.get("travel-attachments-edit")) {
+  customElements.define("travel-attachments-edit", TravelAttachmentsEdit);
+}
 
 export class TransportEdit extends HTMLElement {
   #object = null;
