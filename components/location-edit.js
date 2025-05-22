@@ -1,5 +1,10 @@
 import { TravelPositionEdit } from "./travel-position-edit.js";
 import { Location } from "../objects/location.js";
+import { TravelAttachmentsEdit } from "./travel-attachments-edit.js";
+
+if (!customElements.get("travel-attachments-edit")) {
+  customElements.define("travel-attachments-edit", TravelAttachmentsEdit);
+}
 
 export class LocationEdit extends HTMLElement {
   #object = null;
@@ -93,6 +98,7 @@ export class LocationEdit extends HTMLElement {
             </select>
             <label for="description">Description</label>
             <textarea id="description"></textarea>
+            <travel-attachments-edit></travel-attachments-edit>
             <travel-position-edit id="position" value="${JSON.stringify(this.#object.position)}"></travel-position-edit>
           </main>
           <footer>
@@ -136,6 +142,7 @@ export class LocationEdit extends HTMLElement {
         }
       }
     });
+    this.shadowRoot.querySelector("travel-attachments-edit").attachments = this.#object._attachments;
   }
 
   #elements_to_object() {
@@ -150,6 +157,7 @@ export class LocationEdit extends HTMLElement {
     });
 
     this.#object.subtype = this.shadowRoot.querySelector("#subtype").value;
+    this.#object._attachments = this.shadowRoot.querySelector("travel-attachments-edit").attachments;
   }
 }
 
