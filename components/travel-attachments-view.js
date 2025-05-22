@@ -30,7 +30,7 @@ export class TravelAttachmentsView extends HTMLElement {
   }
 
   #renderAttachments() {
-    return Object.entries(this.#attachments).map((attachment) => {
+    return Object.entries(this.#attachments).toSorted((a, b) => a[0].localeCompare(b[0])).map((attachment) => {
       return /*html*/ `
         <button slot="attachment" onclick="this.getRootNode().host.dispatchEvent(new CustomEvent('open-attachment', { detail: { attachment: '${escapeHtml(attachment[0])}' } }))" class="attachment">${escapeHtml(attachment[0])}</button>
       `;
