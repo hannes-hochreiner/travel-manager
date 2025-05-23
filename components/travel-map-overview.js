@@ -135,7 +135,10 @@ export class TravelMapOverview extends HTMLElement {
     let lat_max = -90;
     let lat_min = 90;
     this.#vectorSource.clear();
-    this.#map.getOverlays().forEach(overlay => this.#map.removeOverlay(overlay));
+
+    while (this.#map.getOverlays().getArray().length > 0) {
+      this.#map.removeOverlay(this.#map.getOverlays().getArray()[0]);
+    }
 
     if (objects && objects.length > 0) {
       this.#vectorSource.addFeatures(objects.map(object => {
