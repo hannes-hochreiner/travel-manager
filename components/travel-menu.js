@@ -21,7 +21,7 @@ export class TravelMenu extends HTMLElement {
           display: none;
           position: absolute;
           right: 0;
-          top: 0;
+          top: -0.7rem;
           background-color: var(--background);
           min-width: 15rem;
           box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
@@ -30,7 +30,7 @@ export class TravelMenu extends HTMLElement {
           list-style: none;
         }
 
-        .dropdown:hover .dropdown-content {
+        .dropdown.open .dropdown-content {
           display: flex;
           flex-direction: column;
         }
@@ -48,8 +48,8 @@ export class TravelMenu extends HTMLElement {
         }
       </style>
       <div class="dropdown">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
-        <menu class="dropdown-content">
+        <svg onclick="this.parentElement.classList.toggle('open')" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+        <menu class="dropdown-content" onclick="this.parentElement.classList.remove('open')" onmouseleave="this.parentElement.classList.remove('open')">
           <slot></slot>
         </menu>
       </div>
