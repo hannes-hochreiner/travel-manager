@@ -4,6 +4,7 @@ export class Location {
       title: { name: "Title", type: "string"},
       description: { name: "Description", type: "markdown"},
       position: { name: "Position", type: "position"},
+      attachments: { name: "Attachments", type: "attachments"},
       subtype: { name: "Type", type: "select", options: {
         "accommodation": { name: "Accommodation", icon: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M40-200v-600h80v400h320v-320h320q66 0 113 47t47 113v360h-80v-120H120v120H40Zm240-240q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35Z"/></svg>' },
         "sight": { name: "Sight", icon: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M80-120v-80h160v-160h-80v-80h84q12-75 66.5-129.5T440-636v-204h280v160H520v44q75 12 129.5 66.5T716-440h84v80h-80v160h160v80H80Zm240-80h120v-160H320v160Zm200 0h120v-160H520v160Z"/></svg>' },

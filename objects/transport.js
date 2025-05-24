@@ -14,7 +14,7 @@ export class Transport {
     },
   }
 
-  static default() {
+  static default(parent) {
     let date = new Date();
     let dateTime = date.toISOString().substring(0, 16);
 
@@ -24,6 +24,7 @@ export class Transport {
       subtype: "train",
       title: "",
       description: "",
+      parent: parent,
       startPosition: [0,0],
       endPosition: [0,0],
       startDateTime: dateTime,

@@ -7,7 +7,7 @@ const projectArtifacts = [
 const externalLibraries = [
   'https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap',
   'https://fonts.gstatic.com/s/notosans/v39/o-0bIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjc5a7duw.woff2',
-  'https://cdn.jsdelivr.net/npm/marked/marked.min.js',
+  'https://cdn.jsdelivr.net/npm/marked/marked.min.js/+esm',
   'https://cdn.jsdelivr.net/npm/pouchdb/+esm',
   'https://cdn.jsdelivr.net/npm/pouchdb-find/+esm',
   'https://cdn.jsdelivr.net/npm/spark-md5@3.0.2/+esm',

@@ -1,8 +1,12 @@
 import { TravelMenu } from "./travel-menu.js";
+import { TravelMarkdownView } from "./travel-markdown-view.js";
+import { Trip } from "../objects/trip.js";
+import { updateElementsFromObject, registerCustomElements } from "../objects/utils.js";
 
-if (!customElements.get("travel-menu")) {
-  customElements.define("travel-menu", TravelMenu);
-}
+registerCustomElements([
+  ["travel-markdown-view", TravelMarkdownView],
+  ["travel-menu", TravelMenu],
+]);
 
 export class TripView extends HTMLElement {
   constructor(object, editCb, deleteCb) {
@@ -67,11 +71,6 @@ export class TripView extends HTMLElement {
           align-items: baseline;
           color: var(--secondary-dark);
         }
-
-        p {
-          padding: 0.5rem;
-          margin: 0;
-        }
       </style>
       <div class="content">
         <header>
@@ -90,7 +89,7 @@ export class TripView extends HTMLElement {
           </travel-menu>
         </header>
         <main>
-          <p id="description"></p>
+          <travel-markdown-view id="description" data-style="secondary"></travel-markdown-view>
         </main>
       </div>
     `;
@@ -98,21 +97,7 @@ export class TripView extends HTMLElement {
     this.shadowRoot.querySelector("#button_edit").addEventListener("click", () => editCb(object));
     this.shadowRoot.querySelector("#button_delete").addEventListener("click", () => deleteCb(object));
 
-    this.update(object);
-  }
-
-  update(object) {
-    Object.keys(object).forEach((key) => {
-      let element = this.shadowRoot.querySelector("#" + key);
-
-      if (element) {
-        if (key === "description") {
-          element.innerHTML = marked.parse(object[key]);
-        } else {
-          element.innerHTML = object[key];
-        }
-      }
-    });
+    updateElementsFromObject(object, Trip, this.shadowRoot);
   }
 }
 

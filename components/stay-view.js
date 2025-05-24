@@ -1,8 +1,12 @@
 import { TravelMenu } from "./travel-menu.js";
+import { TravelMarkdownView } from "./travel-markdown-view.js";
+import { registerCustomElements, updateElementsFromObject } from "../objects/utils.js";
+import { Stay } from "../objects/stay.js";
 
-if (!customElements.get("travel-menu")) {
-  customElements.define("travel-menu", TravelMenu);
-}
+registerCustomElements([
+  ["travel-markdown-view", TravelMarkdownView],
+  ["travel-menu", TravelMenu],
+]);
 
 export class StayView extends HTMLElement {
   constructor(object, editCb, deleteCb) {
@@ -98,7 +102,7 @@ export class StayView extends HTMLElement {
           </div>
         </div>
         <main>
-          <p id="description"></p>
+          <travel-markdown-view id="description" data-style="secondary"></travel-markdown-view>
         </main>
       </div>
     `;
@@ -111,21 +115,7 @@ export class StayView extends HTMLElement {
         window.open(`om://map?v=1&ll=${object.position[1]},${object.position[0]}&n=${encodeURIComponent(object.title)}`)
     });
 
-    this.update(object);
-  }
-
-  update(object) {
-    Object.keys(object).forEach((key) => {
-      let element = this.shadowRoot.querySelector("#" + key);
-
-      if (element) {
-        if (key === "description") {
-          element.innerHTML = marked.parse(object[key]);
-        } else {
-          element.innerHTML = object[key];
-        }
-      }
-    });
+    updateElementsFromObject(object, Stay, this.shadowRoot);
   }
 }
 
