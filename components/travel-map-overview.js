@@ -35,7 +35,7 @@ export class TravelMapOverview extends HTMLElement {
     
     this.#iconDefault = new Style({
       image: new Icon({
-        anchor: [.5, .5],
+        anchor: [.5, .9],
         anchorXUnits: 'fraction',
         anchorYUnits: 'fraction',
         src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Z"/></svg>`], {type: 'image/svg+xml'})),
@@ -191,7 +191,7 @@ export class TravelMapOverview extends HTMLElement {
 
           const dx = endPosition[0] - startPosition[0];
           const dy = endPosition[1] - startPosition[1];
-          const rotation = Math.atan2(dy, dx) - (Math.PI / 4);
+          const rotation = Math.atan2(dy, dx);
 
           feature.setStyle([
             new Style({
@@ -201,12 +201,13 @@ export class TravelMapOverview extends HTMLElement {
               }),
             }),
             new Style({
-              geometry: new Point(fromLonLat([endPosition[0] - .1 * dx, endPosition[1] - .1 * dy])),
+              geometry: new Point(fromLonLat(endPosition)),
               image: new Icon({
-                src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M516-120 402-402 120-516v-56l720-268-268 720h-56Z"/></svg>`], {type: 'image/svg+xml'})),
-                anchor: [.5, .5],
+                src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 6.3499999 6.35" width="24px" fill="#1f1f1f"><path d="M 0,0 6.3499999,3.175 0,6.3499999 Z"/></svg>`], {type: 'image/svg+xml'})),
+                anchor: [1, .5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
+                scale: 0.55,
                 rotateWithView: true,
                 rotation: -rotation,
               }),
