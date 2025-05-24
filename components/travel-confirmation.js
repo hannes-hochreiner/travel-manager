@@ -9,7 +9,6 @@ export class TravelConfirmation extends HTMLElement {
       <style>
         dialog {
           padding: 0;
-          width: calc(100% - 1rem);
         }
 
         div.content {

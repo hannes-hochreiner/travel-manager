@@ -42,7 +42,10 @@ export class TravelMain extends HTMLElement {
         <main>
           <trip-edit></trip-edit>
           <travel-login></travel-login>
-          <travel-confirmation></travel-confirmation>
+          <travel-confirmation>
+            <div slot="title">Delete &quot;<span class="confirm_title"></span>&quot;</div>
+            <div slot="message">Are you sure you want to delete &quot;<span class="confirm_title"></span>&quot;?</div>
+          </travel-confirmation>
           <slot name="list"></slot>
           <travel-notification></travel-notification>
         </main>
@@ -86,13 +89,11 @@ export class TravelMain extends HTMLElement {
   }
 
   #deleteTravel(travel) {
-    let tc = this.shadowRoot.querySelector("travel-confirmation");
+    this.shadowRoot.querySelectorAll("travel-confirmation span.confirm_title").forEach((ct) => {
+      ct.innerText = travel.title;
+    });
 
-    tc.innerHTML = /*html*/ `
-      <div slot="title">Delete ${travel.title}</div>
-      <div slot="message">Are you sure you want to delete ${travel.title}?</div>
-    `;
-    tc.confirm = async () => {
+    this.shadowRoot.querySelector("travel-confirmation").confirm = async () => {
       const repo = await new Repo();
 
       await repo.deleteDoc(travel);
