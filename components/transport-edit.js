@@ -109,7 +109,7 @@ export class TransportEdit extends HTMLElement {
           <main>
             <fieldset>
               <label for="type">Type</label>
-              <select id="type">${this.renderTypeOptions()}</select>
+              <select id="subtype">${this.renderTypeOptions()}</select>
             </fieldset>
             <fieldset>
               <legend>Start</legend>
@@ -170,6 +170,7 @@ export class TransportEdit extends HTMLElement {
     this.#object.description = this.shadowRoot.querySelector("#description").value;
     this.#object.endDateTime = this.shadowRoot.querySelector("#endDatetime").value;
     this.#object.endPosition = this.shadowRoot.querySelector("#endPosition").value;
+    this.#object.subtype = this.shadowRoot.querySelector("#subtype").value;
 
     let attachmentsEdit = this.shadowRoot.querySelector("travel-attachments-edit");
 
