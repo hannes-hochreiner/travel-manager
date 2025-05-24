@@ -112,7 +112,7 @@ export class TransportView extends HTMLElement {
           <div id="endDateTime" class="date"></div>
         </div>
         <travel-markdown-view data-style="primary" id="description"></travel-markdown-view>
-        <travel-attachments-view id="attachments"></travel-attachments-view>
+        <travel-attachments-view data-style="primary" id="attachments"></travel-attachments-view>
       </div>
     `;
   }

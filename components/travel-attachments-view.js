@@ -10,6 +10,8 @@ export class TravelAttachmentsView extends HTMLElement {
   }
 
   #render() {
+    const style = this.getAttribute("data-style") || "primary";
+
     return /*html*/ `
       <style>
         .attachments {
@@ -21,6 +23,18 @@ export class TravelAttachmentsView extends HTMLElement {
 
         button.attachment {
           height: 5rem;
+          background-color: var(--${style}-light);
+          border: 1px solid var(--${style}-dark);
+          border-radius: 0.25rem;
+          color: var(--${style}-dark);
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        button.attachment:hover {
+          background-color: var(--${style}-dark);
+          color: var(--${style}-light);
         }
       </style>
       <div class="attachments">

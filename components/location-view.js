@@ -94,7 +94,7 @@ export class LocationView extends HTMLElement {
         <main>
           <travel-markdown-view id="description" data-style="secondary"></travel-markdown-view>
         </main>
-        <travel-attachments-view id="attachments"></travel-attachments-view>
+        <travel-attachments-view id="attachments" data-style="secondary"></travel-attachments-view>
       </div>
     `;
 

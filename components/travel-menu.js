@@ -23,9 +23,15 @@ export class TravelMenu extends HTMLElement {
           background: none;
           border: none;
           padding: 0.5rem;
+          border-radius: 0.25rem;
         }
 
         .dropdown.open button {
+          background-color: var(--${style}-light);
+        }
+
+        .dropdown button:hover {
+          cursor: pointer;
           background-color: var(--${style}-light);
         }
 
