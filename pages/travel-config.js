@@ -137,6 +137,9 @@ export class TravelConfig extends HTMLElement {
         <button id="login_button" onclick="this.getRootNode().host.login(event)">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z"/></svg> login
         </button>
+        <button id="logout_button" onclick="this.getRootNode().host.logout(event)">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg> logout
+        </button>
       </main>
     `
   }
@@ -206,24 +209,52 @@ export class TravelConfig extends HTMLElement {
       if (loginData) {
         let url = "/api/_session";
   
-        console.log(await fetch(url, {
+        const result = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({name: loginData.username, password: loginData.password})
-        }));
+        });
 
         const repo = await new Repo();
-        this.#info.lastLogin = new Date();
+        if (result.ok) {
+          this.#info.lastLogin = new Date();
+          this.#bc.postMessage({title: "Login", message: "Login successful", type: "success"});
+        } else {
+          this.#info.lastLogin = "";
+          const error = await result.json();
+          this.#bc.postMessage({title: "Login Error", message: `${error.error}: ${error.reason}`, type: "error"});
+        }
+
         await repo.setInfo(this.#info);
         this.#info = await repo.getInfo();
         this.shadowRoot.querySelector("#authentication").innerHTML = this.#renderAuthentication();
-        this.#bc.postMessage({title: "Login", message: "Login successful", type: "success"});
       }
     } catch (error) {
       console.error(error);
       this.#bc.postMessage({title: "Login Error", message: error.message, type: "error"});
+    }
+  }
+
+  async logout() {
+    try {
+      let url = "/api/_session";
+
+      console.log(await fetch(url, {
+        method: "DELETE",
+      }));
+
+      const repo = await new Repo();
+      this.#info.lastLogin = "";
+      await repo.setInfo(this.#info);
+      this.#info = await repo.getInfo();
+
+      this.shadowRoot.querySelector("#authentication").innerHTML = this.#renderAuthentication();
+      this.#bc.postMessage({title: "Logout", message: "Logout successful", type: "success"});
+    } catch (error) {
+      console.error(error);
+      this.#bc.postMessage({title: "Logout Error", message: error.message, type: "error"});
     }
   }
 
