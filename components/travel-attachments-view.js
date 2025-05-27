@@ -27,9 +27,10 @@ export class TravelAttachmentsView extends HTMLElement {
           border: 1px solid var(--${style}-dark);
           border-radius: 0.25rem;
           color: var(--${style}-dark);
-          font-size: 1.1rem;
+          font-size: 1rem;
           font-weight: 700;
           cursor: pointer;
+          overflow: hidden;
         }
 
         button.attachment:hover {
