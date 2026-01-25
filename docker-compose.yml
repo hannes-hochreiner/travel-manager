@@ -1,0 +1,30 @@
+services:
+  couchdb:
+    image: couchdb:3.4.1
+    container_name: travel-manager-couchdb
+    ports:
+      - "5984:5984"
+    environment:
+      COUCHDB_USER: "admin"
+      COUCHDB_PASSWORD: "password"
+    # volumes:
+    #   - ./couchdb.ini:/opt/couchdb/etc/local.d/couchdb.ini:ro
+    networks:
+      - travel-manager
+
+  server:
+    image: nginx:alpine
+    container_name: travel-manager-server
+    depends_on:
+      - couchdb
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./result/var/html:/usr/share/nginx/html:ro
+    networks:
+      - travel-manager
+
+networks:
+  travel-manager:
+    driver: bridge
