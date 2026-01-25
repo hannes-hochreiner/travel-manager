@@ -1,4 +1,4 @@
-import { default as marked } from "https://cdn.jsdelivr.net/npm/marked/marked.min.js/+esm";
+import marked from 'https://cdn.jsdelivr.net/npm/marked@17.0.1/+esm';
 
 export class TravelMarkdownView extends HTMLElement {
   constructor() {
