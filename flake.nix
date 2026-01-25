@@ -32,13 +32,12 @@
       # Inherit inputs from checks.
       # checks = self.checks.${system};
       shellHook = ''
-        exec zellij -l zellij.kdl
+        exec nu
       '';
       # Additional dev-shell environment variables can be set directly
       # MY_CUSTOM_DEVELOPMENT_VAR = "something else";
       # Extra inputs can be added here; cargo and rustc are provided by default.
       buildInputs = with pkgs; [
-        zellij
         nodejs_23
         nushell
         tera-cli
