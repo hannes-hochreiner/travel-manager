@@ -7,38 +7,37 @@ def "main build" [
   src: string
 ] {
   augment_path
-  print $env
+  # print ($env | to nuon -s)
 
   let out = $env.out
+  let tmp = $env.tmp
   let var_html = $"($out)/var/html"
 
+  mkdir $tmp
   cd $src
-  mkdir $var_html
 
   log info "copying repo"
-  cp repo.js $var_html
+  cp repo.js $tmp
   log info "copying index.html"
-  cp index.html $var_html
+  cp index.html $tmp
   log info "copying manifest.json"
-  cp manifest.json $var_html
+  cp manifest.json $tmp
   log info "copying icon.svg"
-  cp icon.svg $var_html
-  log info "creating service worker"
-  create_service_worker $src $var_html
-  # log info "copying sw.js"
-  # cp sw.js $var_html
+  cp icon.svg $tmp
   log info "copying worker.js"
-  cp worker.js $var_html
+  ^cp worker.js $tmp
   log info "copying components"
-  cp -r components $var_html
-  chmod -R 755 $var_html
+  ^cp -r components $tmp
   log info "copying pages"
-  cp -r pages $var_html
-  chmod -R 755 $var_html
+  ^cp -r pages $tmp
   log info "copying objects"
-  cp -r objects $var_html
-  chmod -R 755 $var_html
-  
+  ^cp -r objects $tmp
+  log info "creating service worker"
+  create_service_worker $src $tmp
+
+  mkdir $var_html
+  ^cp -r $"($tmp)/." $var_html
+
   log info "build complete"
 }
 
