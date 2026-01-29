@@ -3,6 +3,11 @@ export-env {
     use std/log []
 }
 
+export def rebuild [] {
+  nix-build
+  docker compose restart
+}
+
 export def build [] {
 }
 
