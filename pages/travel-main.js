@@ -67,8 +67,16 @@ export class TravelMain extends HTMLElement {
 
   async #update() {
     const repo = await new Repo();
+    const docs = await repo.getAllDocs("travel") || [];
+    docs.sort((a, b) => {
+      const ta = (a.title || "").toString();
+      const tb = (b.title || "").toString();
 
-    this.#travelList.objects = await repo.getAllDocs("travel");
+      return -ta.localeCompare(tb, undefined, { sensitivity: "base", numeric: true });
+    });
+
+    console.log("Updated travel list:", docs);
+    this.#travelList.objects = docs;
   }
 
   #addTravel() {
