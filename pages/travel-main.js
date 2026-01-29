@@ -75,7 +75,6 @@ export class TravelMain extends HTMLElement {
       return -ta.localeCompare(tb, undefined, { sensitivity: "base", numeric: true });
     });
 
-    console.log("Updated travel list:", docs);
     this.#travelList.objects = docs;
   }
 
