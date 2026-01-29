@@ -32,7 +32,6 @@ export class TravelConfig extends HTMLElement {
     } catch (err) {
       this.#info = {
         _id: "info",
-        lastLogin: null,
         lastSync: null,
       };
     }
@@ -90,9 +89,6 @@ export class TravelConfig extends HTMLElement {
           <h2>Configuration</h2>
         </div>
         <main>
-          <article id="authentication">
-            ${this.#renderAuthentication()}
-          </article>
           <article id="synchronization">
             ${this.#renderSynchronization()}
           </article>
@@ -122,23 +118,6 @@ export class TravelConfig extends HTMLElement {
             '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-120q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM254-346l-84-86q59-59 138.5-93.5T480-560q92 0 171.5 35T790-430l-84 84q-44-44-102-69t-124-25q-66 0-124 25t-102 69ZM84-516 0-600q92-94 215-147t265-53q142 0 265 53t215 147l-84 84q-77-77-178.5-120.5T480-680q-116 0-217.5 43.5T84-516Z"/></svg>'
           } 
           ${this.#config.offline ? "offline" : "online"}
-        </button>
-      </main>
-    `
-  }
-
-  #renderAuthentication() {
-    return /*html*/ `
-      <header>
-        Authentication
-      </header>
-      <main>
-        Last login: ${this.#formatDate(this.#info.lastLogin)}
-        <button id="login_button" onclick="this.getRootNode().host.login(event)">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z"/></svg> login
-        </button>
-        <button id="logout_button" onclick="this.getRootNode().host.logout(event)">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg> logout
         </button>
       </main>
     `
@@ -199,62 +178,6 @@ export class TravelConfig extends HTMLElement {
     } catch (error) {
       console.error(error);
       this.#bc.postMessage({title: "Persist Error", message: error.message, type: "error"});
-    }
-  }
-
-  async login() {
-    try {
-      const loginData = await this.shadowRoot.querySelector("travel-login").getLoginData();
-
-      if (loginData) {
-        let url = "/api/_session";
-  
-        const result = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({name: loginData.username, password: loginData.password})
-        });
-
-        const repo = await new Repo();
-        if (result.ok) {
-          this.#info.lastLogin = new Date();
-          this.#bc.postMessage({title: "Login", message: "Login successful", type: "success"});
-        } else {
-          this.#info.lastLogin = "";
-          const error = await result.json();
-          this.#bc.postMessage({title: "Login Error", message: `${error.error}: ${error.reason}`, type: "error"});
-        }
-
-        await repo.setInfo(this.#info);
-        this.#info = await repo.getInfo();
-        this.shadowRoot.querySelector("#authentication").innerHTML = this.#renderAuthentication();
-      }
-    } catch (error) {
-      console.error(error);
-      this.#bc.postMessage({title: "Login Error", message: error.message, type: "error"});
-    }
-  }
-
-  async logout() {
-    try {
-      let url = "/api/_session";
-
-      console.log(await fetch(url, {
-        method: "DELETE",
-      }));
-
-      const repo = await new Repo();
-      this.#info.lastLogin = "";
-      await repo.setInfo(this.#info);
-      this.#info = await repo.getInfo();
-
-      this.shadowRoot.querySelector("#authentication").innerHTML = this.#renderAuthentication();
-      this.#bc.postMessage({title: "Logout", message: "Logout successful", type: "success"});
-    } catch (error) {
-      console.error(error);
-      this.#bc.postMessage({title: "Logout Error", message: error.message, type: "error"});
     }
   }
 
