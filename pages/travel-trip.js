@@ -1,5 +1,6 @@
 import { TravelList } from "../components/travel-list.js";
 import { TripView } from "../components/trip-view.js";
+import { Config } from "../objects/config.js";
 import { StayView } from "../components/stay-view.js";
 import { StayEdit } from "../components/stay-edit.js";
 import { TravelHeader } from "../components/travel-header.js";
@@ -20,6 +21,7 @@ registerCustomElements([
 export class TravelTrip extends HTMLElement {
   #tripId = null;
   #trip = null;
+  #config = null;
   #stayEdit = null;
   #tripList = null;
   #stays = null;
@@ -35,6 +37,11 @@ export class TravelTrip extends HTMLElement {
     this.attachShadow({ mode: "open", slotAssignment: "manual" });
     const repo = await new Repo();
     this.#trip = await repo.getDoc(this.#tripId);
+    try {
+      this.#config = await repo.getConfig();
+    } catch {
+      this.#config = Config.default();
+    }
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
         div.content {
@@ -98,10 +105,11 @@ export class TravelTrip extends HTMLElement {
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M360-300q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M80-240v-480h80v480H80Zm560 0-57-56 144-144H240v-80h487L584-664l56-56 240 240-240 240Z"/></svg>
             </button>
+            ${this.#config.organicMapsAvailable ? `
             <button id="om_link">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
-            </button>
+            </button>` : ''}
           </div>
         </div>
         <main>
@@ -134,9 +142,11 @@ export class TravelTrip extends HTMLElement {
     });
     this.appendChild(this.#tripList);
     this.shadowRoot.querySelector("slot[name=list]").assign(this.#tripList);
-    this.shadowRoot.querySelector("#om_link").addEventListener("click", () => {
-      window.open(`om://map?v=1&${this.#stays.map((stay) => `ll=${stay.position[1]},${stay.position[0]}&n=${encodeURIComponent(stay.title)}`).join("&")}`)
-    });
+    if (this.#config.organicMapsAvailable) {
+      this.shadowRoot.querySelector("#om_link").addEventListener("click", () => {
+        window.open(`om://map?v=1&${this.#stays.map((stay) => `ll=${stay.position[1]},${stay.position[0]}&n=${encodeURIComponent(stay.title)}`).join("&")}`)
+      });
+    }
 
     await this.#update();
   }

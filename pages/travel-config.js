@@ -1,7 +1,7 @@
 import { TravelHeader } from "../components/travel-header.js";
 import { TravelLogin } from "../components/travel-login.js";
-import { TravelNotification } from "../components/travel-notification.js";
 import { Repo } from "../repo.js";
+import { Config } from "../objects/config.js";
 
 export class TravelConfig extends HTMLElement {
   #bc = null;
@@ -20,11 +20,7 @@ export class TravelConfig extends HTMLElement {
     try {
       this.#config = await repo.getConfig();
     } catch (err) {
-      this.#config = {
-        _id: "config",
-        offline: false,
-        notifyOnAutoSync: false,
-      };
+      this.#config = Config.default();
     }
 
     try {
@@ -92,32 +88,31 @@ export class TravelConfig extends HTMLElement {
           <article id="synchronization">
             ${this.#renderSynchronization()}
           </article>
-          <article id="networking">
-            ${this.#renderNetworking()}
+          <article id="external-apps">
+            ${this.#renderExternalApps()}
           </article>
           <article id="storage">
             ${await this.#renderStorage()}
           </article>
           <travel-login></travel-login>
-          <travel-notification></travel-notification>
         </main>
       </div>
     `;
   }
 
-  #renderNetworking() {
+  #renderExternalApps() {
     return /*html*/ `
       <header>
-        Networking Mode
+        External Apps
       </header>
       <main>
-        <button id="connect" onclick="this.getRootNode().host.toggleConnect(event)">
-          ${this.#config.offline ? 
-            '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M790-56 414-434q-47 11-87.5 33T254-346l-84-86q32-32 69-56t79-42l-90-90q-41 21-76.5 46.5T84-516L0-602q32-32 66.5-57.5T140-708l-84-84 56-56 736 736-58 56Zm-310-64q-42 0-71-29.5T380-220q0-42 29-71t71-29q42 0 71 29t29 71q0 41-29 70.5T480-120Zm236-238-29-29-29-29-144-144q81 8 151.5 41T790-432l-74 74Zm160-158q-77-77-178.5-120.5T480-680q-21 0-40.5 1.5T400-674L298-776q44-12 89.5-18t92.5-6q142 0 265 53t215 145l-84 86Z"/></svg>'
+        <button onclick="this.getRootNode().host.toggleOrganicMaps(event)">
+          ${this.#config.organicMapsAvailable ?
+            '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>'
             :
-            '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-120q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM254-346l-84-86q59-59 138.5-93.5T480-560q92 0 171.5 35T790-430l-84 84q-44-44-102-69t-124-25q-66 0-124 25t-102 69ZM84-516 0-600q92-94 215-147t265-53q142 0 265 53t215 147l-84 84q-77-77-178.5-120.5T480-680q-116 0-217.5 43.5T84-516Z"/></svg>'
-          } 
-          ${this.#config.offline ? "offline" : "online"}
+            '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Z"/></svg>'
+          }
+          Organic Maps ${this.#config.organicMapsAvailable ? "available" : "not available"}
         </button>
       </main>
     `
@@ -196,25 +191,27 @@ export class TravelConfig extends HTMLElement {
     }
   }
 
-  async toggleConnect() {
+  async toggleOrganicMaps() {
     try {
       const repo = await new Repo();
-      this.#config.offline = !this.#config.offline;
-      await repo.setConfig(this.#config);
+      const fresh = await repo.getConfig();
+      fresh.organicMapsAvailable = !fresh.organicMapsAvailable;
+      await repo.setConfig(fresh);
       this.#config = await repo.getConfig();
-      this.shadowRoot.querySelector("#networking").innerHTML = this.#renderNetworking();
-      this.#bc.postMessage({title: "Connection", message: this.#config.offline ? "Offline" : "Online", type: "info"});
+      this.shadowRoot.querySelector("#external-apps").innerHTML = this.#renderExternalApps();
+      this.#bc.postMessage({ title: "External Apps", message: this.#config.organicMapsAvailable ? "Organic Maps enabled" : "Organic Maps disabled", type: "info" });
     } catch (error) {
       console.error(error);
-      this.#bc.postMessage({title: "Connection Error", message: error.message, type: "error"});
+      this.#bc.postMessage({ title: "External Apps Error", message: error.message, type: "error" });
     }
   }
 
   async toggleNotifyOnAutoSync() {
     try {
       const repo = await new Repo();
-      this.#config.notifyOnAutoSync = !this.#config.notifyOnAutoSync;
-      await repo.setConfig(this.#config);
+      const fresh = await repo.getConfig();
+      fresh.notifyOnAutoSync = !fresh.notifyOnAutoSync;
+      await repo.setConfig(fresh);
       this.#config = await repo.getConfig();
       this.shadowRoot.querySelector("#synchronization").innerHTML = this.#renderSynchronization();
       this.#bc.postMessage({title: "Notification", message: this.#config.notifyOnAutoSync ? "Automatic synchronization notification enabled" : "Automatic synchronization notification disabled", type: "info"});

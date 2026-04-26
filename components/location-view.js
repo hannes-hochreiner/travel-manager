@@ -1,6 +1,8 @@
 import { TravelAttachmentsView } from "./travel-attachments-view.js";
 import { Repo } from "../repo.js";
 import { Location } from "../objects/location.js";
+import { Config } from "../objects/config.js";
+
 import { TravelMarkdownView } from "./travel-markdown-view.js";
 import { registerCustomElements, updateElementsFromObject } from "../objects/utils.js";
 import { TravelMenu } from "./travel-menu.js";
@@ -125,6 +127,19 @@ export class LocationView extends HTMLElement {
     }
   }
 
+  async connectedCallback() {
+    const repo = await new Repo();
+    let config;
+    try {
+      config = await repo.getConfig();
+    } catch {
+      config = Config.default();
+    }
+    if (!config.organicMapsAvailable) {
+      this.shadowRoot.querySelector("#button_om_link")?.remove();
+    }
+  }
+
   async openAttachment(objectId, attachment) {
     let repo = await new Repo();
     let attachmentObj = await repo.getAttachment(objectId, attachment);
@@ -133,7 +148,7 @@ export class LocationView extends HTMLElement {
     window.open(url, "_blank");
     URL.revokeObjectURL(url);
   }
-  
+
 }
 
 customElements.define("location-view", LocationView);

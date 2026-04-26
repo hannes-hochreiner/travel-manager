@@ -10,6 +10,9 @@ The Travel Manager Project is a web application that allows users to manage thei
 - Add/remove/edit trips
 - Add/remove/edit stays to a trip
 - Add/remove/edit locations to a stay
+- Offline/online mode toggle accessible from the application header
+- Optional integration with Organic Maps (deep links for map view and directions)
+- Optional integration with Google Maps (directions links, only shown in online mode)
 
 ## Data Model
 
@@ -101,3 +104,19 @@ The position-edit component allows the user to create or update a position by ei
 
 ### US4: Location
 - As a user I want to be able to add/remove/edit locations to a stay
+
+### US5: Offline/Online Mode
+- As a user I want to toggle offline/online mode from anywhere in the app, so that I can control data synchronization without navigating to the settings page.
+- **Acceptance Criteria:**
+  - An offline/online toggle button is visible in the application header on every page
+  - The button shows the current connectivity state (offline or online icon)
+  - Toggling the button immediately persists the new state and shows a notification
+
+### US6: External App Integration
+- As a user I want to configure which external map apps are available, so that only relevant map links are shown.
+- **Acceptance Criteria:**
+  - The settings page has an "Organic Maps available" toggle
+  - When Organic Maps is enabled, "open in Organic Maps" buttons appear on stays, locations, the trip page, and the stay page
+  - When Organic Maps is enabled, the direction links dialog includes an Organic Maps option
+  - Google Maps direction links are only shown when the app is in online mode
+  - The direction links button on the stay page is only shown when at least one of the above options is available (online mode or Organic Maps enabled)
