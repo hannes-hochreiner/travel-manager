@@ -2,6 +2,7 @@ import { escapeHtml } from "../objects/utils.js";
 
 export class TravelDirectionLinks extends HTMLElement {
   #locations = [];
+  #config = null;
 
   constructor() {
     super();
@@ -78,14 +79,14 @@ export class TravelDirectionLinks extends HTMLElement {
             </select>
           </main>
           <footer>
-            <button class="action" onclick="this.getRootNode().host.generateGoogleLink()">
+            <button id="btn-google" class="action" onclick="this.getRootNode().host.generateGoogleLink()">
               Google Maps
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
             </button>
-            <button class="action" onclick="this.getRootNode().host.generateOrganicLink()">
+            <button id="btn-organic" class="action" onclick="this.getRootNode().host.generateOrganicLink()">
               Organic Maps
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>
-          </button>
+            </button>
           </footer>
         </div>
       </dialog>
@@ -123,8 +124,11 @@ export class TravelDirectionLinks extends HTMLElement {
     this.#locations = [];
   }
 
-  set locations(locations) {
+  open(config, locations) {
+    this.#config = config;
     this.#locations = locations;
+    this.shadowRoot.querySelector("#btn-google").style.display = config?.offline ? "none" : "";
+    this.shadowRoot.querySelector("#btn-organic").style.display = config?.organicMapsAvailable ? "" : "none";
     let options = this.#renderOptions();
     this.shadowRoot.querySelector("#select_origin").innerHTML = options;
     this.shadowRoot.querySelector("#select_destination").innerHTML = options;

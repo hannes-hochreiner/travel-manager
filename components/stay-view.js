@@ -2,6 +2,8 @@ import { TravelMenu } from "./travel-menu.js";
 import { TravelMarkdownView } from "./travel-markdown-view.js";
 import { registerCustomElements, updateElementsFromObject } from "../objects/utils.js";
 import { Stay } from "../objects/stay.js";
+import { Repo } from "../repo.js";
+import { Config } from "../objects/config.js";
 
 registerCustomElements([
   ["travel-markdown-view", TravelMarkdownView],
@@ -116,6 +118,19 @@ export class StayView extends HTMLElement {
     });
 
     updateElementsFromObject(object, Stay, this.shadowRoot);
+  }
+
+  async connectedCallback() {
+    const repo = await new Repo();
+    let config;
+    try {
+      config = await repo.getConfig();
+    } catch {
+      config = Config.default();
+    }
+    if (!config.organicMapsAvailable) {
+      this.shadowRoot.querySelector("#button_om_link")?.remove();
+    }
   }
 }
 

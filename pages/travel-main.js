@@ -4,7 +4,6 @@ import { TravelHeader } from "../components/travel-header.js";
 import { TripView } from "../components/trip-view.js";
 import { TravelLogin } from "../components/travel-login.js";
 import { TravelConfirmation } from "../components/travel-confirmation.js";
-import { TravelNotification } from "../components/travel-notification.js";
 import { Repo } from "../repo.js";
 
 export class TravelMain extends HTMLElement {
@@ -47,7 +46,6 @@ export class TravelMain extends HTMLElement {
             <div slot="message">Are you sure you want to delete &quot;<span class="confirm_title"></span>&quot;?</div>
           </travel-confirmation>
           <slot name="list"></slot>
-          <travel-notification></travel-notification>
         </main>
       </div>
     `;
