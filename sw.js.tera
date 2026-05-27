@@ -45,6 +45,8 @@ self.addEventListener('install', function(event) {
       return cache.addAll([
         ...projectArtifacts,
         ...externalLibraries]);
+    }).then(function() {
+      return self.skipWaiting();
     })
   );
 });
@@ -82,6 +84,8 @@ self.addEventListener('activate', function activator(event) {
             return caches.delete(key);
         })
       );
+    }).then(function() {
+      return self.clients.claim();
     })
   );
 });
