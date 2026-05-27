@@ -1,5 +1,6 @@
 import { default as PouchDb } from "https://cdn.jsdelivr.net/npm/pouchdb/+esm";
 import { default as PouchDbFind } from "https://cdn.jsdelivr.net/npm/pouchdb-find/+esm";
+import { Config } from "./objects/config.js";
 
 export class Repo {
   static #instance = null;
@@ -87,7 +88,11 @@ export class Repo {
   }
 
   async getConfig() {
-    return await this.#dbLocal.get("config");
+    try {
+      return await this.#dbLocal.get("config");
+    } catch {
+      return Config.default();
+    }
   }
 
   async setConfig(config) {
