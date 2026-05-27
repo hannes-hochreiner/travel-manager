@@ -105,6 +105,33 @@ export class TravelMapOverview extends HTMLElement {
       }),
     });
 
+    this.#icons.hike = new Style({
+      image: new Icon({
+        anchor: [.5, .5],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+        src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="m280-40 123-622q6-29 27-43.5t44-14.5q23 0 42.5 10t31.5 30l40 64q18 29 46.5 52.5T700-529v-71h60v560h-60v-406q-48-11-89-35t-71-59l-24 120 84 80v300h-80v-240l-84-80-72 320h-84Zm17-395-85-16q-16-3-25-16.5t-6-30.5l30-157q6-32 34-50.5t60-12.5l46 9-54 274Zm186.5-328.5Q460-787 460-820t23.5-56.5Q507-900 540-900t56.5 23.5Q620-853 620-820t-23.5 56.5Q573-740 540-740t-56.5-23.5Z"/></svg>`], {type: 'image/svg+xml'})),
+      }),
+    });
+
+    this.#icons.sports = new Style({
+      image: new Icon({
+        anchor: [.5, .5],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+        src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M167-231q-42-54-64.5-117.5T80-480q0-68 22.5-131.5T167-729q58 45 91 110.5T291-480q0 73-33 138.5T167-231Zm175.5 127Q277-128 223-174q69-57 108-136.5T370-480q0-90-39-169.5T223-786q54-46 119.5-70T480-880q72 0 137.5 24T737-786q-69 57-108 136.5T590-480q0 90 39 169.5T737-174q-54 46-119.5 70T480-80q-72 0-137.5-24ZM793-231q-58-45-91-110.5T669-480q0-73 33-138.5T793-729q42 54 64.5 117.5T880-480q0 68-22.5 131.5T793-231Z"/></svg>`], {type: 'image/svg+xml'})),
+      }),
+    });
+
+    this.#icons.shop = new Style({
+      image: new Icon({
+        anchor: [.5, .5],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+        src: URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#143f52"><path d="M223.5-103.5Q200-127 200-160t23.5-56.5Q247-240 280-240t56.5 23.5Q360-193 360-160t-23.5 56.5Q313-80 280-80t-56.5-23.5Zm400 0Q600-127 600-160t23.5-56.5Q647-240 680-240t56.5 23.5Q760-193 760-160t-23.5 56.5Q713-80 680-80t-56.5-23.5ZM208-800h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>`], {type: 'image/svg+xml'})),
+      }),
+    });
+
     this.#vectorSource = new VectorSource();
 
     this.#map = new Map({
