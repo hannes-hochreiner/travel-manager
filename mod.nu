@@ -5,7 +5,7 @@ export-env {
 
 export def rebuild [] {
   nix-build
-  docker compose restart
+  docker compose up -d --force-recreate server
 }
 
 export def build [] {

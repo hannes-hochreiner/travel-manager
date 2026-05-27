@@ -17,7 +17,7 @@
     };
     travel-manager = derivation {
       inherit system;
-      name = "travel-manager-v0.0.2";
+      name = "travel-manager-${self.shortRev or "dev"}";
       builder = "${pkgs.nushell}/bin/nu";
       buildInputs = with pkgs; [
         # gcc_multi
